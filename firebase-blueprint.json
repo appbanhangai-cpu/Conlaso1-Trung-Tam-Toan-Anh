@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "Student registration for Conlaso1",
+      "type": "object",
+      "properties": {
+        "parentName": { "type": "string", "description": "Họ tên phụ huynh" },
+        "phone": { "type": "string", "description": "Số điện thoại" },
+        "studentName": { "type": "string", "description": "Tên học sinh" },
+        "studentClass": { "type": "string", "description": "Lớp hiện tại" },
+        "subjects": { "type": "array", "items": { "type": "string" }, "description": "Môn quan tâm" },
+        "note": { "type": "string", "description": "Ghi chú thêm" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian đăng ký" },
+        "status": { "type": "string", "enum": ["new", "contacted", "enrolled"], "description": "Trạng thái xử lý" }
+      },
+      "required": ["parentName", "phone", "studentName", "studentClass"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Feedback from parents and students",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Họ tên người đánh giá" },
+        "role": { "type": "string", "description": "Vai trò (Phụ huynh/Học sinh)" },
+        "content": { "type": "string", "description": "Nội dung đánh giá" },
+        "rating": { "type": "number", "description": "Số sao đánh giá (1-5)" },
+        "approved": { "type": "boolean", "description": "Trạng thái phê duyệt" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian gửi" }
+      },
+      "required": ["name", "role", "content", "rating", "approved", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "Collection of student registrations"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Collection of parent and student feedback"
+    }
+  }
+}
