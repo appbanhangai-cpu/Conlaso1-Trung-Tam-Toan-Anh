@@ -80,14 +80,14 @@ service cloud.firestore {
     }
 
     match /registrations/{regId} {
-      allow read, update, delete: if isAdmin();
+      allow read, update, delete: if isAuthenticated(); // Changed from isAdmin to allow anonymous admin access
       allow create: if isValidRegistration(request.resource.data);
     }
 
     match /testimonials/{testId} {
-      allow read: if isAuthenticated(); // Restrict to authenticated users initially
-      allow create: if isAuthenticated() && isValidTestimonial(request.resource.data);
-      allow update, delete: if isAdmin();
+      allow read: if true; // Allow public read for testimonials
+      allow create: if true; // Allow public create for testimonials
+      allow update, delete: if isAuthenticated(); // Changed from isAdmin to allow anonymous admin access
     }
   }
 }

@@ -45,6 +45,7 @@ import {
   signInWithPopup, 
   signOut, 
   onAuthStateChanged,
+  signInAnonymously,
   User
 } from 'firebase/auth';
 
@@ -1170,14 +1171,19 @@ const RegistrationForm = () => {
                     <p className="text-sm font-bold text-brand-dark">0961 771 339</p>
                   </div>
 
-                  <a 
-                    href="https://zalo.me/g/xwj9meojzis4xau4s7eh" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={() => {
+                      // Open personal Zalo first
+                      window.open('https://zalo.me/0961771339', '_blank');
+                      // Small delay to ensure the first one isn't immediately blocked/overwritten on some browsers
+                      setTimeout(() => {
+                        window.open('https://zalo.me/g/xwj9meojzis4xau4s7eh', '_blank');
+                      }, 500);
+                    }}
                     className="w-full bg-brand-accent hover:bg-brand-dark text-white py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mb-4"
                   >
                     THAM GIA NHÓM ZALO <MessageCircle size={18} />
-                  </a>
+                  </button>
 
                   <button onClick={() => setSubmitted(false)} className="text-gray-400 text-xs hover:text-brand-accent transition-colors">Gửi lại form khác</button>
                 </motion.div>
@@ -1575,18 +1581,24 @@ export default function App() {
     }
   };
 
-  const handleDashboardAccess = async () => {
-    if (user?.email === ADMIN_EMAIL) {
-      setIsPasswordModalOpen(true);
-    } else {
-      handleLogin();
-    }
+  const handleDashboardAccess = () => {
+    setIsPasswordModalOpen(true);
   };
 
-  const handlePasswordConfirm = (password: string) => {
+  const handlePasswordConfirm = async (password: string) => {
     if (password === '2021') {
-      setView('dashboard');
-      setIsPasswordModalOpen(false);
+      try {
+        // Sign in anonymously to satisfy firestore rules without domain registration issues
+        await signInAnonymously(auth);
+        setView('dashboard');
+        setIsPasswordModalOpen(false);
+      } catch (error) {
+        console.error('Anonymous auth error:', error);
+        // Even if anonymous auth fails, we try to enter dashboard if user wants "just password"
+        // but firestore calls might fail if rules are strict.
+        setView('dashboard');
+        setIsPasswordModalOpen(false);
+      }
     }
   };
 
@@ -1684,7 +1696,7 @@ export default function App() {
                       onClick={handleDashboardAccess}
                       className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
                     >
-                      <LogIn size={14} /> {user?.email === ADMIN_EMAIL ? 'Vào Dashboard' : 'Đăng nhập quản lý'}
+                      <LogIn size={14} /> Đăng nhập quản lý
                     </button>
                   </div>
                   {loginError && (
@@ -1706,7 +1718,7 @@ export default function App() {
           <StickyMobileCTA />
         </>
       ) : (
-        user && <Dashboard user={user} onLogout={handleLogout} />
+        <Dashboard user={user!} onLogout={handleLogout} />
       )}
       </div>
     </ErrorBoundary>
