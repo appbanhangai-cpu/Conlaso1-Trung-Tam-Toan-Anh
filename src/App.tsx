@@ -1564,7 +1564,11 @@ export default function App() {
     } catch (error: any) {
       console.error('Login error:', error);
       if (error.code === 'auth/popup-blocked') {
-        setLoginError('Trình duyệt đã chặn cửa sổ đăng nhập. Vui lòng cho phép hiện cửa sổ bật lên.');
+        setLoginError('Trình duyệt đã chặn cửa sổ đăng nhập. Vui lòng cho phép hiện cửa sổ bật lên (popup) và thử lại.');
+      } else if (error.code === 'auth/network-request-failed') {
+        setLoginError('Lỗi kết nối mạng hoặc bị trình duyệt chặn. Vui lòng kiểm tra internet, tắt trình chặn quảng cáo hoặc thử mở trang trong tab mới.');
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setLoginError('Tên miền này chưa được cấp quyền trong Firebase Console. Vui lòng thêm domain vào danh sách Authorized Domains.');
       } else {
         setLoginError('Lỗi đăng nhập: ' + (error.message || 'Vui lòng thử lại.'));
       }
