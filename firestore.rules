@@ -56,10 +56,12 @@ service cloud.firestore {
     // Validation Functions
     function isValidRegistration(data) {
       return data.parentName is string && data.parentName.size() > 0 && data.parentName.size() < 100 &&
-             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
+             data.phone is string && data.phone.size() >= 9 && data.phone.size() <= 15 &&
              data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
              data.studentClass is string && data.studentClass.size() > 0 &&
-             data.status in ['new', 'contacted', 'enrolled'];
+             data.status in ['new', 'contacted', 'enrolled'] &&
+             (!('subjects' in data) || data.subjects is list) &&
+             (!('note' in data) || data.note is string);
     }
 
     function isValidTestimonial(data) {

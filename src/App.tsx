@@ -970,6 +970,7 @@ const Pricing = () => {
 const RegistrationForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     parentName: '',
     phone: '',
@@ -998,9 +999,16 @@ const RegistrationForm = () => {
     
     // Manual validation check for mobile
     if (!formData.parentName.trim() || !formData.phone.trim() || !formData.studentName.trim()) {
+      setError('Vui lòng điền đầy đủ các thông tin bắt buộc.');
       return;
     }
 
+    if (formData.phone.trim().length < 9) {
+      setError('Số điện thoại phải có ít nhất 9 chữ số.');
+      return;
+    }
+
+    setError(null);
     setLoading(true);
     try {
       console.log('Submitting form...', formData);
@@ -1014,6 +1022,7 @@ const RegistrationForm = () => {
       setSubmitted(true);
     } catch (error) {
       console.error('Form submission error:', error);
+      setError('Có lỗi xảy ra khi gửi thông tin. Vui lòng thử lại hoặc liên hệ hotline.');
       handleFirestoreError(error, 'create', 'registrations');
     } finally {
       setLoading(false);
@@ -1158,6 +1167,13 @@ const RegistrationForm = () => {
                     placeholder="Con cần hỗ trợ thêm về..."
                   ></textarea>
                 </div>
+
+                {error && (
+                  <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100">
+                    {error}
+                  </div>
+                )}
+
                 <button 
                   type="submit" 
                   disabled={loading}
@@ -1175,31 +1191,34 @@ const RegistrationForm = () => {
                 <p className="text-gray-500 text-sm mb-6">Cảm ơn bạn đã tin tưởng Conlaso1. Vui lòng kết bạn Zalo và tham gia nhóm để nhận thông tin nhanh nhất.</p>
                 
                 <div className="bg-brand-bg p-4 md:p-6 rounded-2xl border border-gray-100 mb-4 md:mb-6 w-full shadow-inner flex flex-col items-center">
-                  <p className="text-xs md:text-sm font-bold text-gray-500 uppercase mb-3 md:mb-4">Quét mã Zalo cá nhân</p>
-                  <div className="bg-white p-2 rounded-xl shadow-md mb-3">
+                  <p className="text-xs md:text-sm font-bold text-gray-500 uppercase mb-3 md:mb-4">Quét hoặc Bấm để kết bạn</p>
+                  <a 
+                    href="https://zalo.me/0961771339" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-white p-2 rounded-xl shadow-md mb-3 hover:scale-105 transition-transform cursor-pointer block"
+                    title="Bấm để kết bạn Zalo"
+                  >
                     <QRCodeSVG 
                       value="https://zalo.me/0961771339" 
                       size={128}
                       level="H"
                       includeMargin={false}
                     />
-                  </div>
+                  </a>
                   <p className="text-sm md:text-lg font-bold text-brand-dark">0961 771 339</p>
                 </div>
 
-                <motion.button 
+                <motion.a 
+                  href="https://zalo.me/g/xwj9meojzis4xau4s7eh"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   animate={{ scale: [1, 1.02, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  onClick={() => {
-                    window.open('https://zalo.me/0961771339', '_blank');
-                    setTimeout(() => {
-                      window.open('https://zalo.me/g/xwj9meojzis4xau4s7eh', '_blank');
-                    }, 500);
-                  }}
                   className="w-full bg-brand-accent hover:bg-brand-dark text-white py-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 mb-4 shadow-lg shadow-brand-accent/20"
                 >
                   THAM GIA NHÓM ZALO <MessageCircle size={20} />
-                </motion.button>
+                </motion.a>
 
                 <button onClick={() => setSubmitted(false)} className="text-gray-400 text-xs hover:text-brand-accent transition-colors">Gửi lại form khác</button>
               </div>
