@@ -730,6 +730,42 @@ const Testimonials = () => {
       text: "Giáo viên nhiệt tình, có trách nhiệm và luôn cập nhật tình hình học cho phụ huynh.",
       avatar: "https://i.pravatar.cc/150?u=3",
       rating: 5
+    },
+    {
+      name: "Phụ huynh học sinh lớp 2",
+      text: "Con rất thích đi học tại trung tâm. Các cô dạy rất dễ hiểu, con về nhà tự giác làm bài tập mà không cần nhắc nhở.",
+      avatar: "https://i.pravatar.cc/150?u=4",
+      rating: 5
+    },
+    {
+      name: "Học sinh lớp 9",
+      text: "Em đã cải thiện được điểm số môn Tiếng Anh đáng kể sau 3 tháng học. Phương pháp dạy ở đây rất khác biệt và hiệu quả.",
+      avatar: "https://i.pravatar.cc/150?u=5",
+      rating: 5
+    },
+    {
+      name: "Phụ huynh học sinh lớp 5",
+      text: "Trung tâm có môi trường học tập rất tốt, sạch sẽ và hiện đại. Tôi rất yên tâm khi gửi con học tại đây.",
+      avatar: "https://i.pravatar.cc/150?u=6",
+      rating: 5
+    },
+    {
+      name: "Phụ huynh học sinh lớp 7",
+      text: "Môn Toán không còn là nỗi sợ của con nữa. Cảm ơn các thầy cô đã kiên trì hướng dẫn và khích lệ con.",
+      avatar: "https://i.pravatar.cc/150?u=7",
+      rating: 5
+    },
+    {
+      name: "Học sinh lớp 12",
+      text: "Lộ trình ôn thi đại học rất rõ ràng. Em cảm thấy tự tin hơn rất nhiều cho kỳ thi sắp tới.",
+      avatar: "https://i.pravatar.cc/150?u=8",
+      rating: 5
+    },
+    {
+      name: "Phụ huynh học sinh lớp 3",
+      text: "Dịch vụ đưa đón và chăm sóc học sinh rất chu đáo. Con tôi tiến bộ cả về kiến thức lẫn kỹ năng sống.",
+      avatar: "https://i.pravatar.cc/150?u=9",
+      rating: 5
     }
   ];
 
@@ -887,7 +923,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
             type="text" 
             value={formData.name}
             onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent outline-none transition-all text-sm"
+            className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             placeholder="Nguyễn Văn A"
           />
         </div>
@@ -896,7 +932,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           <select 
             value={formData.role}
             onChange={e => setFormData({...formData, role: e.target.value})}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent outline-none transition-all text-sm appearance-none"
+            className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm appearance-none"
           >
             <option value="Phụ huynh">Phụ huynh</option>
             <option value="Học sinh">Học sinh</option>
@@ -909,7 +945,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           required
           value={formData.content}
           onChange={e => setFormData({...formData, content: e.target.value})}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent outline-none transition-all h-32 resize-none text-sm"
+          className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-32 resize-none text-sm"
           placeholder="Chia sẻ cảm nhận hoặc bình luận của bạn về trung tâm..."
         ></textarea>
       </div>
@@ -1249,7 +1285,7 @@ const RegistrationForm = () => {
                       type="text" 
                       value={formData.parentName}
                       onChange={e => setFormData({...formData, parentName: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
                       placeholder="Nguyễn Văn A" 
                     />
                   </div>
@@ -1260,7 +1296,7 @@ const RegistrationForm = () => {
                       type="tel" 
                       value={formData.phone}
                       onChange={e => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
                       placeholder="09xx xxx xxx" 
                     />
                   </div>
@@ -1273,7 +1309,7 @@ const RegistrationForm = () => {
                       type="text" 
                       value={formData.studentName}
                       onChange={e => setFormData({...formData, studentName: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
                       placeholder="Nguyễn Văn B" 
                     />
                   </div>
@@ -1282,7 +1318,7 @@ const RegistrationForm = () => {
                     <select 
                       value={formData.studentClass}
                       onChange={e => setFormData({...formData, studentClass: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all appearance-none"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all appearance-none"
                     >
                       {[...Array(12)].map((_, i) => <option key={i} value={i+1}>Lớp {i+1}</option>)}
                     </select>
@@ -1462,6 +1498,7 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   const [subjectFilter, setSubjectFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+  const [selectedRegForStudent, setSelectedRegForStudent] = useState<any>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -1672,6 +1709,15 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                   />
                 </div>
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                  <button 
+                    onClick={() => {
+                      setSelectedRegForStudent(null);
+                      setIsAddStudentModalOpen(true);
+                    }}
+                    className="px-4 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition-all whitespace-nowrap"
+                  >
+                    Thêm TT
+                  </button>
                   {(['all', 'new', 'contacted', 'enrolled'] as const).map((f) => (
                     <button
                       key={f}
@@ -1732,19 +1778,32 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                       </td>
                       <td className="px-6 py-4 text-sm">{reg.phone || 'N/A'}</td>
                       <td className="px-6 py-4">
-                        <select 
-                          value={reg.status || 'new'}
-                          onChange={(e) => updateRegStatus(reg.id, e.target.value as any)}
-                          className={`text-xs font-bold px-3 py-1 rounded-full border-none outline-none cursor-pointer ${
-                            (reg.status || 'new') === 'new' ? 'bg-yellow-100 text-yellow-700' :
-                            reg.status === 'contacted' ? 'bg-blue-100 text-blue-700' :
-                            'bg-green-100 text-green-700'
-                          }`}
-                        >
-                          <option value="new">Mới</option>
-                          <option value="contacted">Đã liên hệ</option>
-                          <option value="enrolled">Đã nhập học</option>
-                        </select>
+                        <div className="flex items-center gap-3">
+                          <select 
+                            value={reg.status || 'new'}
+                            onChange={(e) => updateRegStatus(reg.id, e.target.value as any)}
+                            className={`text-xs font-bold px-3 py-1 rounded-full border-none outline-none cursor-pointer ${
+                              (reg.status || 'new') === 'new' ? 'bg-yellow-100 text-yellow-700' :
+                              reg.status === 'contacted' ? 'bg-blue-100 text-blue-700' :
+                              'bg-green-100 text-green-700'
+                            }`}
+                          >
+                            <option value="new">Mới</option>
+                            <option value="contacted">Đã liên hệ</option>
+                            <option value="enrolled">Đã nhập học</option>
+                          </select>
+                          {reg.status === 'enrolled' && (
+                            <button 
+                              onClick={() => {
+                                setSelectedRegForStudent(reg);
+                                setIsAddStudentModalOpen(true);
+                              }}
+                              className="text-[10px] font-bold text-red-500 hover:text-red-600 border border-red-200 px-2 py-1 rounded-lg transition-all"
+                            >
+                              Thêm TT
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <button onClick={() => deleteDocItem('registrations', reg.id)} className="text-gray-400 hover:text-red-600 transition-colors">
@@ -1824,11 +1883,6 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                 </div>
               )}
             </div>
-            
-            <AddStudentModal 
-              isOpen={isAddStudentModalOpen}
-              onClose={() => setIsAddStudentModalOpen(false)}
-            />
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1870,6 +1924,15 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
             ))}
           </div>
         )}
+        
+        <AddStudentModal 
+          isOpen={isAddStudentModalOpen}
+          onClose={() => {
+            setIsAddStudentModalOpen(false);
+            setSelectedRegForStudent(null);
+          }}
+          initialData={selectedRegForStudent}
+        />
       </div>
     </div>
   );
@@ -1925,7 +1988,7 @@ const AdminPasswordModal = ({
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Nhập mật khẩu..."
-              className="w-full px-6 py-4 rounded-xl border-2 border-gray-100 focus:border-brand-accent outline-none transition-all text-center text-xl tracking-[0.5em]"
+              className="w-full px-6 py-4 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-center text-xl tracking-[0.5em]"
             />
             {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
           </div>
@@ -2028,7 +2091,7 @@ const PaymentModal = ({
                   value={studentName}
                   onChange={e => setStudentName(e.target.value)}
                   placeholder="Nguyễn Văn A"
-                  className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-brand-accent outline-none transition-all"
+                  className="w-full px-5 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
                 />
               </div>
               <div className="space-y-1">
@@ -2039,7 +2102,7 @@ const PaymentModal = ({
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="09xx xxx xxx"
-                  className="w-full px-5 py-3 rounded-xl border-2 border-gray-100 focus:border-brand-accent outline-none transition-all"
+                  className="w-full px-5 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
                 />
               </div>
               <button 
@@ -2387,7 +2450,7 @@ export default function App() {
   );
 }
 
-const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, onClose: () => void, initialData?: any }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -2398,7 +2461,28 @@ const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
   });
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.studentName || '',
+        phone: initialData.phone || '',
+        school: '',
+        address: '',
+        class: initialData.studentClass || '',
+        subjects: initialData.subjects || []
+      });
+    } else {
+      setFormData({ name: '', phone: '', school: '', address: '', class: '', subjects: [] });
+    }
+    setImage(null);
+    setPreview(null);
+    setError(null);
+    setStatus(null);
+  }, [initialData, isOpen]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -2411,53 +2495,118 @@ const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
+    setStatus('Đang khởi tạo...');
+    console.log('Starting student save process...');
+    
+    // Safety timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+      setStatus(null);
+      setError('Thao tác quá lâu. Vui lòng kiểm tra kết nối mạng và thử lại.');
+      console.error('Save process timed out after 60s');
+    }, 60000);
+
     try {
+      if (!auth.currentUser) {
+        throw new Error('Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn.');
+      }
+      console.log('User authenticated:', auth.currentUser.email);
+
       let photoUrl = '';
       if (image) {
-        const imageRef = ref(storage, `students/${Date.now()}_${image.name}`);
-        await uploadBytes(imageRef, image);
-        photoUrl = await getDownloadURL(imageRef);
+        setStatus('Đang tải ảnh lên...');
+        console.log('Uploading image:', image.name);
+        
+        // Create a promise that rejects after 15 seconds for the image upload
+        const imageUploadPromise = (async () => {
+          try {
+            const imageRef = ref(storage, `students/${Date.now()}_${image.name}`);
+            await uploadBytes(imageRef, image);
+            return await getDownloadURL(imageRef);
+          } catch (err) {
+            console.error('Image upload error:', err);
+            return '';
+          }
+        })();
+
+        const timeoutPromise = new Promise<string>((_, reject) => 
+          setTimeout(() => reject(new Error('Image upload timed out')), 15000)
+        );
+
+        try {
+          photoUrl = await Promise.race([imageUploadPromise, timeoutPromise]);
+          console.log('Image uploaded successfully:', photoUrl);
+        } catch (imgErr) {
+          console.warn('Image upload failed or timed out, continuing without photo:', imgErr);
+          // Continue without photo
+        }
       }
 
-      await addDoc(collection(db, 'students'), {
+      setStatus('Đang lưu dữ liệu...');
+      console.log('Saving student data to Firestore...');
+      
+      const studentData = {
         ...formData,
         photoUrl,
         createdAt: serverTimestamp()
-      });
+      };
+
+      await addDoc(collection(db, 'students'), studentData);
+      console.log('Student data saved successfully');
+      
+      clearTimeout(timeoutId);
+      setLoading(false);
+      setStatus(null);
       onClose();
       setFormData({ name: '', phone: '', school: '', address: '', class: '', subjects: [] });
       setImage(null);
       setPreview(null);
-    } catch (error) {
-      console.error('Error adding student:', error);
-      alert('Có lỗi xảy ra khi thêm học sinh.');
-    } finally {
+    } catch (err: any) {
+      clearTimeout(timeoutId);
       setLoading(false);
+      setStatus(null);
+      console.error('Error in handleSubmit:', err);
+      
+      let message = 'Có lỗi xảy ra khi lưu thông tin.';
+      if (err.message?.includes('permission-denied') || err.code === 'permission-denied') {
+        message = 'Bạn không có quyền thực hiện thao tác này. Vui lòng kiểm tra quyền Admin.';
+      } else if (err.message) {
+        message = err.message;
+      }
+      setError(message);
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 bg-brand-dark/80 backdrop-blur-sm overflow-y-auto">
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-[2.5rem] p-8 md:p-10 w-full max-w-2xl shadow-2xl relative my-8"
+        className="bg-white rounded-[2rem] p-5 md:p-6 w-full max-w-lg shadow-2xl relative my-2"
       >
-        <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-brand-dark transition-colors">
-          <X size={24} />
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors">
+          <X size={20} />
         </button>
-        <h2 className="text-2xl font-bold text-brand-dark mb-8">Thêm học sinh chính thức</h2>
+        <h2 className="text-lg font-bold text-brand-dark mb-4">Thêm học sinh chính thức</h2>
         
-        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
-          <div className="md:col-span-2 flex flex-col items-center mb-4">
-            <div className="w-32 h-32 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 overflow-hidden relative group">
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-red-600 text-xs">
+            <AlertCircle size={16} className="shrink-0" />
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-3">
+          <div className="md:col-span-2 flex flex-col items-center mb-2">
+            <div className="w-20 h-20 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 overflow-hidden relative group">
               {preview ? (
                 <img src={preview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex flex-center items-center justify-center text-gray-300">
-                  <Users size={40} />
+                  <Users size={32} />
                 </div>
               )}
               <input 
@@ -2466,66 +2615,66 @@ const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
                 onChange={handleImageChange}
                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white text-xs font-bold">
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white text-[10px] font-bold">
                 Chọn ảnh
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 mt-2 uppercase font-bold">Ảnh học sinh</p>
+            <p className="text-[9px] text-gray-400 mt-1 uppercase font-bold">Ảnh học sinh</p>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Tên học sinh</label>
+          <div className="space-y-0.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Tên học sinh</label>
             <input 
               required
               type="text" 
               value={formData.name}
               onChange={e => setFormData({...formData, name: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-accent outline-none"
+              className="w-full px-3 py-2 rounded-lg border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Số điện thoại</label>
+          <div className="space-y-0.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Số điện thoại</label>
             <input 
               required
               type="tel" 
               value={formData.phone}
               onChange={e => setFormData({...formData, phone: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-accent outline-none"
+              className="w-full px-3 py-2 rounded-lg border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Đang học trường</label>
+          <div className="space-y-0.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Đang học trường</label>
             <input 
               required
               type="text" 
               value={formData.school}
               onChange={e => setFormData({...formData, school: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-accent outline-none"
+              className="w-full px-3 py-2 rounded-lg border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Lớp</label>
+          <div className="space-y-0.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Lớp</label>
             <input 
               required
               type="text" 
               value={formData.class}
               onChange={e => setFormData({...formData, class: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-accent outline-none"
+              className="w-full px-3 py-2 rounded-lg border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             />
           </div>
-          <div className="md:col-span-2 space-y-1">
-            <label className="text-xs font-bold text-gray-500 uppercase">Địa chỉ</label>
+          <div className="md:col-span-2 space-y-0.5">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Địa chỉ</label>
             <input 
               required
               type="text" 
               value={formData.address}
               onChange={e => setFormData({...formData, address: e.target.value})}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-accent outline-none"
+              className="w-full px-3 py-2 rounded-lg border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
             />
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">Môn học</label>
-            <div className="flex flex-wrap gap-2">
+          <div className="md:col-span-2 space-y-1">
+            <label className="text-[10px] font-bold text-gray-500 uppercase">Môn học</label>
+            <div className="flex flex-wrap gap-1.5">
               {['Toán', 'Tiếng Anh', 'Tiếng Việt', 'Kỹ năng'].map(sub => (
                 <button
                   key={sub}
@@ -2536,7 +2685,7 @@ const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
                       : [...formData.subjects, sub];
                     setFormData({...formData, subjects: subs});
                   }}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${formData.subjects.includes(sub) ? 'bg-brand-accent text-white' : 'bg-gray-100 text-gray-500'}`}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${formData.subjects.includes(sub) ? 'bg-brand-accent text-white' : 'bg-gray-100 text-gray-500'}`}
                 >
                   {sub}
                 </button>
@@ -2544,13 +2693,18 @@ const AddStudentModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
             </div>
           </div>
 
-          <div className="md:col-span-2 pt-4">
+          <div className="md:col-span-2 pt-2">
             <button 
               disabled={loading}
               type="submit" 
-              className="w-full bg-brand-dark hover:bg-brand-accent text-white py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full bg-brand-dark hover:bg-brand-accent text-white py-3 rounded-xl font-bold transition-all shadow-lg flex flex-col items-center justify-center gap-0.5 disabled:opacity-50"
             >
-              {loading ? <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div> : 'LƯU THÔNG TIN HỌC SINH'}
+              {loading ? (
+                <>
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  <span className="text-[10px] font-medium mt-1">{status}</span>
+                </>
+              ) : 'LƯU THÔNG TIN HỌC SINH'}
             </button>
           </div>
         </form>

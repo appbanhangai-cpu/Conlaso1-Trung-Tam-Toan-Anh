@@ -41,6 +41,22 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian gửi" }
       },
       "required": ["name", "role", "content", "rating", "approved", "createdAt"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Official student record",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Tên học sinh" },
+        "phone": { "type": "string", "description": "Số điện thoại" },
+        "school": { "type": "string", "description": "Trường đang học" },
+        "address": { "type": "string", "description": "Địa chỉ" },
+        "class": { "type": "string", "description": "Lớp" },
+        "subjects": { "type": "array", "items": { "type": "string" }, "description": "Môn học" },
+        "photoUrl": { "type": "string", "description": "Ảnh học sinh" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Ngày tạo" }
+      },
+      "required": ["name", "phone", "school", "address", "class", "createdAt"]
     }
   },
   "firestore": {
@@ -55,6 +71,10 @@
     "/testimonials/{testimonialId}": {
       "schema": "Testimonial",
       "description": "Collection of parent and student feedback"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of official student records"
     }
   }
 }
