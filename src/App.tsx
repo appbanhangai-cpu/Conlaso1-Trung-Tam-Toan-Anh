@@ -1315,7 +1315,7 @@ const RegistrationForm = () => {
                 <p className="text-gray-500 text-sm mb-6">Cảm ơn bạn đã tin tưởng Conlaso1. Vui lòng kết bạn Zalo và tham gia nhóm để nhận thông tin nhanh nhất.</p>
                 
                 <div className="bg-brand-bg p-4 md:p-6 rounded-2xl border border-gray-100 mb-4 md:mb-6 w-full shadow-inner flex flex-col items-center">
-                  <p className="text-xs md:text-sm font-bold text-gray-500 uppercase mb-3 md:mb-4">Quét hoặc Bấm để kết bạn</p>
+                  <p className="text-xs md:text-sm font-bold text-gray-500 uppercase mb-3 md:mb-4">Quét hoặc Bấm Mã QR để kết bạn</p>
                   <a 
                     href="https://zalo.me/0961771339" 
                     target="_blank" 
