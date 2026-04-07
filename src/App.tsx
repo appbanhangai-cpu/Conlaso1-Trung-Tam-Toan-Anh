@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Phone, 
@@ -23,7 +23,8 @@ import {
   LogIn,
   Facebook,
   Youtube,
-  Music
+  Music,
+  Heart
 } from 'lucide-react';
 import { db, auth } from './firebase';
 import { 
@@ -73,6 +74,50 @@ interface Testimonial {
 // --- Utils ---
 const ADMIN_EMAIL = "appbanhangai@gmail.com";
 
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("ErrorBoundary caught an error", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-brand-bg p-4">
+          <div className="bg-white p-8 rounded-3xl shadow-xl text-center max-w-md">
+            <h2 className="text-2xl font-bold text-brand-dark mb-4">Đã có lỗi xảy ra</h2>
+            <p className="text-gray-500 mb-6">Chúng tôi rất tiếc về sự cố này. Vui lòng tải lại trang hoặc thử lại sau.</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-brand-accent text-white px-8 py-3 rounded-xl font-bold shadow-lg"
+            >
+              Tải lại trang
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 const handleFirestoreError = (error: any, operation: string, path: string) => {
   const errInfo = {
     error: error instanceof Error ? error.message : String(error),
@@ -102,7 +147,21 @@ const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-xl">C1</div>
+          <div className="relative w-12 h-12 flex items-center justify-center">
+            <img 
+              src="/logo.png" 
+              alt="Conlaso1 Logo" 
+              className="w-full h-full object-contain z-10"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
+              referrerPolicy="no-referrer"
+            />
+            <div className="hidden absolute inset-0 bg-brand-accent rounded-xl flex items-center justify-center text-white shadow-lg">
+              <Heart size={24} fill="currentColor" />
+            </div>
+          </div>
           <span className={`text-xl font-bold ${isScrolled ? 'text-brand-dark' : 'text-brand-dark md:text-white'}`}>CONLASO1</span>
         </div>
         <div className="hidden md:flex items-center gap-6">
@@ -152,10 +211,13 @@ const StickyNav = () => {
 };
 
 const Hero = () => (
-  <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-brand-dark">
+  <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#0a0f1a]">
     {/* Background Pattern */}
-    <div className="absolute inset-0 opacity-10">
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-accent via-transparent to-transparent" />
+    <div className="absolute inset-0">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,_rgba(37,99,235,0.15),_transparent_50%)]" />
+      <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,_rgba(245,158,11,0.1),_transparent_50%)]" />
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
     </div>
     
     <div className="container mx-auto px-4 relative z-10">
@@ -165,20 +227,32 @@ const Hero = () => (
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="inline-block bg-brand-accent/20 text-brand-accent px-4 py-1 rounded-full text-sm font-bold mb-6 border border-brand-accent/30">
-            TRUNG TÂM TIẾNG ANH & TOÁN
-          </span>
-          <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-6">
-            Conlaso1 – Đồng Hành Cùng Con <span className="text-brand-cta">Chinh Phục Tương Lai</span>
+          <div className="mb-4">
+            <span className="text-white/70 text-sm font-medium tracking-[0.2em] uppercase">
+              TRUNG TÂM TIẾNG ANH & TOÁN
+            </span>
+          </div>
+          <h1 className="font-serif leading-[1.1] mb-8">
+            <div className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2 drop-shadow-lg">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-cta to-yellow-200">Conlaso1 –</span>
+              <span className="text-white ml-4">Đồng</span>
+            </div>
+            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-2 flex items-baseline gap-4 drop-shadow-lg">
+              Hành Cùng Con
+              <span className="text-xl md:text-3xl text-gray-400 font-sans font-medium">Chinh</span>
+            </div>
+            <div className="text-4xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cta via-yellow-200 to-brand-cta drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+              Phục Tương Lai
+            </div>
           </h1>
-          <p className="text-gray-300 text-lg mb-8 max-w-lg">
+          <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
             Giúp học sinh xây chắc nền tảng Toán và Tiếng Anh, nâng cao tư duy, tăng sự tự tin và cải thiện kết quả học tập rõ rệt.
           </p>
           <div className="flex flex-wrap gap-4 mb-10">
-            <a href="#register" className="bg-brand-cta hover:bg-opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-brand-cta/20">
+            <a href="#register" className="w-full sm:w-auto bg-brand-cta hover:bg-opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-cta/20">
               ĐĂNG KÝ HỌC THỬ <ChevronRight size={20} />
             </a>
-            <a href="#register" className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all border border-white/20">
+            <a href="#register" className="hidden sm:inline-block bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all border border-white/20">
               NHẬN TƯ VẤN NGAY
             </a>
           </div>
@@ -212,25 +286,46 @@ const Hero = () => (
               referrerPolicy="no-referrer"
             />
           </div>
-          {/* Floating Info Box */}
-          <motion.div 
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl z-20 max-w-[240px]"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                <MapPin size={20} />
+          
+          {/* Contact Info Buttons below image */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-6 justify-center">
+            <motion.a 
+              href="tel:0961771339" 
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="flex items-center gap-3 group cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-brand-accent/20 text-brand-accent rounded-full flex items-center justify-center group-hover:bg-brand-accent group-hover:text-white transition-all shadow-lg shadow-brand-accent/10">
+                <Phone size={18} />
               </div>
-              <div className="text-xs font-bold text-brand-dark">16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                <Phone size={20} />
+              <motion.span
+                className="text-white font-bold text-lg"
+                animate={{ color: ["#ffffff", "#ffcc00", "#ffffff"] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                0961771339
+              </motion.span>
+            </motion.a>
+            <motion.a 
+              href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              className="flex items-center gap-3 group cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-brand-accent/20 text-brand-accent rounded-full flex items-center justify-center group-hover:bg-brand-accent group-hover:text-white transition-all shadow-lg shadow-brand-accent/10">
+                <MapPin size={18} />
               </div>
-              <div className="text-xs font-bold text-brand-dark">0961 771 339</div>
-            </div>
-          </motion.div>
+              <motion.span
+                className="text-white font-bold text-lg"
+                animate={{ color: ["#ffffff", "#ffcc00", "#ffffff"] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              >
+                16A Lý Thái Tổ
+              </motion.span>
+            </motion.a>
+          </div>
         </motion.div>
       </div>
     </div>
@@ -279,10 +374,12 @@ const Programs = () => {
               whileHover={{ y: -10 }}
               className={`${p.color} p-8 rounded-3xl transition-all border border-transparent hover:border-brand-accent/20 shadow-sm`}
             >
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-md">
-                {p.icon}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md flex-shrink-0">
+                  {p.icon}
+                </div>
+                <h3 className="text-lg font-bold text-brand-dark leading-tight">{p.title}</h3>
               </div>
-              <h3 className="text-xl font-bold text-brand-dark mb-4">{p.title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-6">{p.desc}</p>
               <button className="text-brand-accent font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
                 Xem chi tiết <ChevronRight size={16} />
@@ -386,12 +483,14 @@ const Benefits = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {benefits.map((b, i) => (
-            <div key={i} className="text-center group">
-              <div className="w-20 h-20 bg-brand-accent rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-6 transition-transform shadow-lg shadow-brand-accent/20">
+            <div key={i} className="flex items-center gap-4 mb-8 md:block md:text-center group">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-brand-accent rounded-2xl flex items-center justify-center flex-shrink-0 md:mx-auto mb-0 md:mb-6 group-hover:rotate-6 transition-transform shadow-lg shadow-brand-accent/20">
                 {b.icon}
               </div>
-              <h3 className="text-xl font-bold text-brand-dark mb-3">{b.title}</h3>
-              <p className="text-gray-600 text-sm">{b.desc}</p>
+              <div className="text-left md:text-center">
+                <h3 className="text-xl font-bold text-brand-dark mb-1 md:mb-3">{b.title}</h3>
+                <p className="text-gray-600 text-sm">{b.desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -443,8 +542,18 @@ const Teachers = () => (
 const Testimonials = () => {
   const [realReviews, setRealReviews] = useState<Testimonial[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, () => {
+      setIsAuthReady(true);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthReady) return;
+
     const q = query(
       collection(db, 'testimonials'), 
       where('approved', '==', true),
@@ -453,9 +562,11 @@ const Testimonials = () => {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Testimonial[];
       setRealReviews(data);
+    }, (error) => {
+      handleFirestoreError(error, 'get', 'testimonials');
     });
     return () => unsubscribe();
-  }, []);
+  }, [isAuthReady]);
 
   const staticReviews = [
     {
@@ -557,6 +668,23 @@ const Testimonials = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Floating Contact Button */}
+      <motion.a
+        href="tel:0961771339"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.1 }}
+        className="fixed bottom-6 right-6 z-[90] bg-white p-2 rounded-[2rem] shadow-2xl flex items-center justify-center group border border-gray-100"
+      >
+        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center relative">
+          <div className="w-10 h-10 bg-red-500 rounded-full animate-pulse" />
+          <Phone size={20} className="absolute text-white" fill="currentColor" />
+        </div>
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:px-4 transition-all duration-500 text-brand-dark font-bold whitespace-nowrap">
+          Gọi ngay: 0961.771.339
+        </span>
+      </motion.a>
     </section>
   );
 };
@@ -688,57 +816,149 @@ const Process = () => {
 const Pricing = () => {
   const packages = [
     {
-      title: "Gói Cơ Bản",
-      desc: "Củng cố kiến thức nền tảng Tiếng Anh hoặc Toán.",
-      features: ["Hệ thống kiến thức SGK", "Luyện bài tập cơ bản", "Báo cáo tháng"],
-      cta: "NHẬN TƯ VẤN",
-      featured: false
+      title: "GÓI NÂNG CAO",
+      desc: "Giải pháp tối ưu giúp con cải thiện Tiếng Anh & Toán rõ rệt",
+      price: "1.800.000đ",
+      period: "/ tháng",
+      features: [
+        "3 buổi/tuần",
+        "Kiểm tra định kỳ",
+        "Báo cáo tiến độ cho phụ huynh",
+        "Lộ trình phù hợp theo năng lực",
+        "Giáo viên theo sát quá trình học"
+      ],
+      cta: "ĐĂNG KÝ TƯ VẤN NGAY",
+      support: "Phù hợp với đa số học sinh cần cải thiện kết quả học tập và xây nền tảng vững.",
+      featured: true,
+      badge: "🔥 PHỤ HUYNH CHỌN NHIỀU NHẤT",
+      order: 1
     },
     {
-      title: "Gói Nâng Cao",
-      desc: "Tăng tốc kỹ năng, mở rộng tư duy và luyện chuyên đề.",
-      features: ["Kiến thức chuyên sâu", "Luyện đề thi học sinh giỏi", "Tư duy logic nâng cao", "Báo cáo tuần"],
-      cta: "NHẬN TƯ VẤN",
-      featured: true
+      title: "GÓI CƠ BẢN",
+      desc: "Phù hợp học sinh cần củng cố lại kiến thức nền",
+      price: "1.200.000đ",
+      period: "/ tháng",
+      features: [
+        "2 buổi/tuần",
+        "Ôn tập kiến thức nền tảng",
+        "Lớp học theo trình độ",
+        "Môi trường học tập tích cực"
+      ],
+      cta: "CHỌN GÓI CƠ BẢN",
+      support: "Dành cho học sinh cần học chắc lại từ gốc trước khi tăng tốc.",
+      featured: false,
+      order: 2
     },
     {
-      title: "Gói Toàn Diện",
-      desc: "Kết hợp Tiếng Anh và Toán theo lộ trình cá nhân hóa.",
-      features: ["Lộ trình song song", "Ưu đãi học phí kép", "Theo sát 1-1 khi cần", "Cam kết đầu ra"],
-      cta: "NHẬN TƯ VẤN",
-      featured: false
+      title: "GÓI PREMIUM",
+      desc: "Đồng hành chuyên sâu với cường độ cao hơn",
+      price: "3.500.000đ",
+      period: "/ tháng",
+      features: [
+        "5 buổi/tuần",
+        "Theo sát chuyên sâu",
+        "Báo cáo chi tiết hàng tuần",
+        "Hỗ trợ định hướng học tập",
+        "Tăng cường luyện tập nâng cao"
+      ],
+      cta: "NHẬN TƯ VẤN RIÊNG",
+      support: "Phù hợp với học sinh cần lộ trình chuyên sâu và cường độ học cao.",
+      featured: false,
+      order: 3
     }
   ];
+
+  // Sort by order for mobile (Nâng Cao first)
+  const sortedPackages = [...packages].sort((a, b) => a.order - b.order);
 
   return (
     <section id="pricing" className="py-24 bg-brand-bg">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Chương Trình Học Phù Hợp Theo Nhu Cầu</h2>
-          <p className="text-gray-500">Ưu đãi đặc biệt cho học sinh đăng ký sớm hoặc đăng ký theo nhóm.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4 uppercase tracking-tight">Chọn Lộ Trình Phù Hợp Cho Con</h2>
+          <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full mb-6"></div>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            Mỗi học sinh có một năng lực khác nhau. Conlaso1 giúp phụ huynh chọn đúng chương trình để con học chắc hơn, tiến bộ nhanh hơn.
+          </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          {packages.map((p, i) => (
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {sortedPackages.map((p, i) => (
             <div 
               key={i} 
-              className={`p-8 rounded-3xl border ${p.featured ? 'bg-brand-dark text-white border-brand-accent shadow-xl scale-105' : 'bg-white text-brand-dark border-gray-100 shadow-sm'} transition-all`}
+              className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 flex flex-col ${
+                p.featured 
+                  ? 'bg-brand-dark text-white border-brand-accent shadow-2xl md:scale-105 z-10' 
+                  : 'bg-white text-brand-dark border-gray-100 shadow-sm hover:shadow-md'
+              }`}
             >
-              {p.featured && <div className="bg-brand-cta text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">PHỔ BIẾN NHẤT</div>}
-              <h3 className="text-2xl font-bold mb-4">{p.title}</h3>
-              <p className={`${p.featured ? 'text-gray-400' : 'text-gray-500'} text-sm mb-8`}>{p.desc}</p>
-              <ul className="space-y-4 mb-10">
+              {p.badge && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-cta text-white text-[10px] font-bold px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                  {p.badge}
+                </div>
+              )}
+              
+              <div className="mb-6">
+                <h3 className="text-xl font-bold mb-2">{p.title}</h3>
+                <p className={`text-xs ${p.featured ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
+                  {p.desc}
+                </p>
+              </div>
+
+              <div className="mb-8">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black">{p.price}</span>
+                  <span className={`text-sm ${p.featured ? 'text-gray-400' : 'text-gray-500'}`}>{p.period}</span>
+                </div>
+              </div>
+
+              <ul className="space-y-4 mb-10 flex-grow">
                 {p.features.map((f, j) => (
-                  <li key={j} className="flex items-center gap-3 text-sm">
-                    <CheckCircle2 size={18} className="text-brand-accent" />
-                    <span>{f}</span>
+                  <li key={j} className="flex items-start gap-3 text-sm">
+                    <CheckCircle2 size={18} className="text-brand-accent flex-shrink-0 mt-0.5" />
+                    <span className={p.featured ? 'text-gray-200' : 'text-gray-600'}>{f}</span>
                   </li>
                 ))}
               </ul>
-              <a href="#register" className={`block text-center py-4 rounded-xl font-bold transition-all ${p.featured ? 'bg-brand-accent hover:bg-opacity-90 text-white' : 'bg-brand-bg hover:bg-gray-200 text-brand-dark'}`}>
-                {p.cta}
-              </a>
+
+              <div className="mt-auto">
+                <a 
+                  href="#register" 
+                  className={`block w-full text-center py-4 rounded-2xl font-bold transition-all shadow-lg ${
+                    p.featured 
+                      ? 'bg-brand-cta hover:bg-opacity-90 text-white shadow-brand-cta/20' 
+                      : 'bg-brand-bg hover:bg-gray-200 text-brand-dark shadow-gray-200/20'
+                  }`}
+                >
+                  {p.cta}
+                </a>
+                <p className={`text-[10px] text-center mt-4 italic ${p.featured ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {p.support}
+                </p>
+              </div>
             </div>
           ))}
+        </div>
+
+        {/* Help Block */}
+        <div className="mt-16 max-w-3xl mx-auto bg-white rounded-[2rem] p-8 md:p-10 text-center shadow-xl border border-gray-50 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-accent"></div>
+          <h3 className="text-xl md:text-2xl font-bold text-brand-dark mb-4">Phụ huynh chưa biết chọn gói nào?</h3>
+          <p className="text-gray-500 mb-8 text-sm md:text-base">
+            Đừng lo. Đội ngũ Conlaso1 sẽ kiểm tra trình độ và tư vấn lộ trình phù hợp nhất cho từng học sinh.
+          </p>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <a 
+              href="#register" 
+              className="w-full md:w-auto bg-brand-accent hover:bg-brand-dark text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-brand-accent/20"
+            >
+              NHẬN TƯ VẤN MIỄN PHÍ
+            </a>
+            <div className="flex items-center gap-3 text-brand-dark font-bold">
+              <Phone size={20} className="text-brand-accent" />
+              <span>0961 771 339 - 0988 771 339</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -794,24 +1014,36 @@ const RegistrationForm = () => {
               Đội ngũ Conlaso1 sẽ liên hệ tư vấn lộ trình học tập phù hợp nhất cho con trong vòng 24h làm việc.
             </p>
             <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+              <motion.a 
+                href="tel:0961771339"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="flex items-center gap-4 group cursor-pointer"
+              >
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
                   <Phone size={24} />
                 </div>
                 <div>
                   <div className="text-sm text-blue-200">Hotline hỗ trợ</div>
-                  <div className="font-bold">0961 771 339 - 0988 771 339</div>
+                  <div className="font-bold group-hover:text-brand-cta transition-colors">0961 771 339 - 0988 771 339</div>
                 </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+              </motion.a>
+              <motion.a 
+                href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619"
+                target="_blank"
+                rel="noopener noreferrer"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                className="flex items-center gap-4 group cursor-pointer"
+              >
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
                   <MapPin size={24} />
                 </div>
                 <div>
                   <div className="text-sm text-blue-200">Địa chỉ trung tâm</div>
-                  <div className="font-bold">16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</div>
+                  <div className="font-bold group-hover:text-brand-cta transition-colors">16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</div>
                 </div>
-              </div>
+              </motion.a>
             </div>
           </div>
           <div className="md:w-1/2 bg-white p-12">
@@ -825,9 +1057,9 @@ const RegistrationForm = () => {
                   onSubmit={handleSubmit} 
                   className="space-y-4"
                 >
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase">Họ tên phụ huynh</label>
+                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Họ tên phụ huynh</label>
                       <input 
                         required 
                         type="text" 
@@ -838,7 +1070,7 @@ const RegistrationForm = () => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase">Số điện thoại</label>
+                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Số điện thoại</label>
                       <input 
                         required 
                         type="tel" 
@@ -849,9 +1081,9 @@ const RegistrationForm = () => {
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase">Tên học sinh</label>
+                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Tên học sinh</label>
                       <input 
                         required 
                         type="text" 
@@ -862,7 +1094,7 @@ const RegistrationForm = () => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase">Lớp hiện tại</label>
+                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Lớp hiện tại</label>
                       <select 
                         value={formData.studentClass}
                         onChange={e => setFormData({...formData, studentClass: e.target.value})}
@@ -872,9 +1104,8 @@ const RegistrationForm = () => {
                       </select>
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">Môn quan tâm</label>
-                    <div className="flex gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-4 flex-wrap">
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input 
                           type="checkbox" 
@@ -884,6 +1115,9 @@ const RegistrationForm = () => {
                         />
                         <span className="text-sm font-medium text-gray-700">Tiếng Anh</span>
                       </label>
+                      
+                      <span className="text-xs font-bold text-gray-400 uppercase">Môn quan tâm</span>
+
                       <label className="flex items-center gap-2 cursor-pointer">
                         <input 
                           type="checkbox" 
@@ -1266,6 +1500,28 @@ const AdminPasswordModal = ({
   );
 };
 
+const StickyMobileCTA = () => {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-[60] md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 p-3 flex items-center justify-between shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+      <a 
+        href="tel:0961771339" 
+        className="flex items-center gap-2 text-brand-dark font-bold text-sm px-3"
+      >
+        <div className="w-10 h-10 bg-brand-bg rounded-full flex items-center justify-center text-brand-accent">
+          <Phone size={20} fill="currentColor" className="text-brand-accent" />
+        </div>
+        <span>0961 771 339</span>
+      </a>
+      <a 
+        href="#register" 
+        className="bg-brand-cta text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-cta/20"
+      >
+        Đăng ký tư vấn
+      </a>
+    </div>
+  );
+};
+
 export default function App() {
   const [view, setView] = useState<'landing' | 'dashboard'>('landing');
   const [user, setUser] = useState<User | null>(null);
@@ -1338,7 +1594,8 @@ export default function App() {
   if (authLoading) return <div className="h-screen flex items-center justify-center text-brand-accent font-bold">ĐANG TẢI...</div>;
 
   return (
-    <div className="font-sans bg-white selection:bg-brand-accent selection:text-white scroll-smooth">
+    <ErrorBoundary>
+      <div className="font-sans bg-white selection:bg-brand-accent selection:text-white scroll-smooth">
       {view === 'landing' ? (
         <>
           <Navbar />
@@ -1358,7 +1615,21 @@ export default function App() {
               <div className="grid md:grid-cols-3 gap-12 mb-12">
                 <div>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-10 h-10 bg-brand-accent rounded-lg flex items-center justify-center text-white font-bold text-xl">C1</div>
+                    <div className="relative w-12 h-12 flex items-center justify-center bg-white rounded-lg p-1">
+                      <img 
+                        src="/logo.png" 
+                        alt="Conlaso1 Logo" 
+                        className="w-full h-full object-contain z-10"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="hidden absolute inset-0 flex items-center justify-center text-brand-accent">
+                        <Heart size={24} fill="currentColor" />
+                      </div>
+                    </div>
                     <span className="text-2xl font-bold">CONLASO1</span>
                   </div>
                   <p className="text-gray-400 leading-relaxed">
@@ -1427,10 +1698,13 @@ export default function App() {
             onClose={() => setIsPasswordModalOpen(false)} 
             onConfirm={handlePasswordConfirm} 
           />
+
+          <StickyMobileCTA />
         </>
       ) : (
         user && <Dashboard user={user} onLogout={handleLogout} />
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

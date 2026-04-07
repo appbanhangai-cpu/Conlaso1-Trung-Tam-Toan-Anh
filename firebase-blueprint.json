@@ -1,5 +1,17 @@
 {
   "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Họ tên" },
+        "email": { "type": "string", "format": "email", "description": "Email" },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "Vai trò" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Ngày tạo" }
+      },
+      "required": ["name", "email", "role"]
+    },
     "Registration": {
       "title": "Registration",
       "description": "Student registration for Conlaso1",
@@ -14,7 +26,7 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian đăng ký" },
         "status": { "type": "string", "enum": ["new", "contacted", "enrolled"], "description": "Trạng thái xử lý" }
       },
-      "required": ["parentName", "phone", "studentName", "studentClass"]
+      "required": ["parentName", "phone", "studentName", "studentClass", "createdAt", "status"]
     },
     "Testimonial": {
       "title": "Testimonial",
@@ -32,6 +44,10 @@
     }
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
     "/registrations/{registrationId}": {
       "schema": "Registration",
       "description": "Collection of student registrations"

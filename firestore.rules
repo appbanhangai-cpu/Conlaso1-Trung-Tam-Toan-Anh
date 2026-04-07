@@ -2,81 +2,91 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // ===============================================================
-    // Helper Functions
+    // Assumed Data Model
     // ===============================================================
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      return isAuthenticated() && 
-        (request.auth.token.email == "appbanhangai@gmail.com" && request.auth.token.email_verified == true);
-    }
-
-    // ===============================================================
-    // Assumed Data Model: Registration
-    // ===============================================================
+    //
     // Collection: registrations
     // Fields:
     //   - parentName: string (required)
-    //   - phone: string (required, length 10-15)
+    //   - phone: string (required)
     //   - studentName: string (required)
     //   - studentClass: string (required)
     //   - subjects: list (optional)
     //   - note: string (optional)
     //   - createdAt: timestamp (required)
     //   - status: string (required, enum: ['new', 'contacted', 'enrolled'])
-    // ===============================================================
-
-    function isValidRegistration(data) {
-      return data.keys().hasAll(['parentName', 'phone', 'studentName', 'studentClass', 'createdAt', 'status']) &&
-             data.parentName is string && data.parentName.size() > 0 && data.parentName.size() < 100 &&
-             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
-             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
-             data.studentClass is string &&
-             data.createdAt is timestamp &&
-             data.status in ['new', 'contacted', 'enrolled'];
-    }
-
-    match /registrations/{registrationId} {
-      // Anyone can create a registration
-      allow create: if isValidRegistration(request.resource.data);
-      
-      // Only admin can read, update, or delete
-      allow read, update, delete: if isAdmin();
-    }
-
-    // ===============================================================
-    // Assumed Data Model: Testimonial
-    // ===============================================================
+    //
     // Collection: testimonials
     // Fields:
     //   - name: string (required)
     //   - role: string (required)
     //   - content: string (required)
     //   - rating: number (required, 1-5)
-    //   - approved: boolean (required)
+    //   - approved: bool (required)
     //   - createdAt: timestamp (required)
+    //
+    // Collection: users
+    // Fields:
+    //   - name: string
+    //   - email: string
+    //   - role: string (admin/user)
+    //
     // ===============================================================
 
-    function isValidTestimonial(data) {
-      return data.keys().hasAll(['name', 'role', 'content', 'rating', 'approved', 'createdAt']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.role is string && data.role.size() > 0 && data.role.size() < 50 &&
-             data.content is string && data.content.size() > 0 && data.content.size() < 1000 &&
-             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
-             data.approved is bool &&
-             data.createdAt is timestamp;
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    match /testimonials/{testimonialId} {
-      // Anyone can read approved testimonials
-      allow read: if resource.data.approved == true || isAdmin();
-      
-      // Anyone can create a testimonial (default unapproved)
-      allow create: if isValidTestimonial(request.resource.data) && request.resource.data.approved == false;
-      
-      // Only admin can update or delete
+    function isAdmin() {
+      return isAuthenticated() &&
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+        (request.auth.token.email == "appbanhangai@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Validation Functions
+    function isValidRegistration(data) {
+      return data.parentName is string && data.parentName.size() > 0 && data.parentName.size() < 100 &&
+             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
+             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.studentClass is string && data.studentClass.size() > 0 &&
+             data.status in ['new', 'contacted', 'enrolled'];
+    }
+
+    function isValidTestimonial(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.role is string && data.role.size() > 0 &&
+             data.content is string && data.content.size() > 0 && data.content.size() < 1000 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.approved is bool;
+    }
+
+    // Rules
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && 
+                    hasOnlyAllowedFields(['name', 'email', 'role', 'createdAt']) &&
+                    request.resource.data.role == 'user';
+      allow update: if isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role);
+    }
+
+    match /registrations/{regId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isValidRegistration(request.resource.data);
+    }
+
+    match /testimonials/{testId} {
+      allow read: if isAuthenticated(); // Restrict to authenticated users initially
+      allow create: if isAuthenticated() && isValidTestimonial(request.resource.data);
       allow update, delete: if isAdmin();
     }
   }
