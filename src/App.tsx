@@ -235,15 +235,15 @@ const Hero = () => (
             </span>
           </div>
           <h1 className="font-serif leading-[1.1] mb-8">
-            <div className="text-4xl md:text-6xl lg:text-7xl font-bold mb-2 drop-shadow-lg">
+            <div className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 drop-shadow-lg">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-cta to-yellow-200">Conlaso1 –</span>
               <span className="text-white ml-4">Đồng</span>
             </div>
-            <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-2 flex items-baseline gap-4 drop-shadow-lg">
+            <div className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 flex items-baseline gap-4 drop-shadow-lg">
               Hành Cùng Con
-              <span className="text-xl md:text-3xl text-gray-400 font-sans font-medium">Chinh</span>
+              <span className="text-lg md:text-2xl text-gray-400 font-sans font-medium">Chinh</span>
             </div>
-            <div className="text-4xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cta via-yellow-200 to-brand-cta drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cta via-yellow-200 to-brand-cta drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               Phục Tương Lai
             </div>
           </h1>
@@ -335,30 +335,72 @@ const Hero = () => (
 );
 
 const Programs = () => {
+  const [selectedProgram, setSelectedProgram] = useState<any>(null);
+
   const programs = [
     {
       title: "Tiếng Anh nền tảng",
       desc: "Phát âm chuẩn, tăng từ vựng, củng cố ngữ pháp và rèn luyện 4 kỹ năng Nghe - Nói - Đọc - Viết.",
       icon: <BookOpen className="text-blue-600" />,
-      color: "bg-blue-50"
+      color: "bg-blue-50",
+      details: {
+        target: "Xây dựng gốc rễ vững chắc cho học sinh mới bắt đầu hoặc mất gốc.",
+        content: [
+          "Học phát âm chuẩn quốc tế (IPA) ngay từ đầu.",
+          "Mở rộng vốn từ vựng qua các chủ đề gần gũi, sinh động.",
+          "Hệ thống hóa ngữ pháp căn bản một cách dễ hiểu.",
+          "Rèn luyện phản xạ nghe nói tự nhiên qua các hoạt động tương tác."
+        ],
+        benefit: "Giúp con yêu thích tiếng Anh, không còn sợ hãi và tự tin giao tiếp cơ bản."
+      }
     },
     {
       title: "Tiếng Anh nâng cao",
       desc: "Phát triển phản xạ giao tiếp, tăng kỹ năng làm bài và chuẩn bị cho các kỳ thi quan trọng.",
       icon: <Star className="text-yellow-600" />,
-      color: "bg-yellow-50"
+      color: "bg-yellow-50",
+      details: {
+        target: "Phát triển kỹ năng chuyên sâu cho học sinh đã có nền tảng.",
+        content: [
+          "Nâng cao kỹ năng thuyết trình và tranh biện bằng tiếng Anh.",
+          "Rèn luyện kỹ năng viết bài luận logic và mạch lạc.",
+          "Luyện tập các dạng bài thi học sinh giỏi, chứng chỉ quốc tế.",
+          "Mở rộng kiến thức văn hóa và xã hội qua ngôn ngữ."
+        ],
+        benefit: "Bứt phá điểm số tại trường và sẵn sàng cho các kỳ thi chứng chỉ quốc tế."
+      }
     },
     {
       title: "Toán tư duy",
       desc: "Rèn luyện logic, khả năng phân tích, giúp trẻ học chủ động và không học vẹt.",
       icon: <Brain className="text-purple-600" />,
-      color: "bg-purple-50"
+      color: "bg-purple-50",
+      details: {
+        target: "Khơi dậy niềm đam mê và khả năng suy luận logic từ sớm.",
+        content: [
+          "Tiếp cận toán học qua hình ảnh, mô hình và trò chơi trí tuệ.",
+          "Áp dụng phương pháp toán Singapore giúp hiểu bản chất vấn đề.",
+          "Rèn luyện khả năng quan sát, phân tích và giải quyết tình huống.",
+          "Kích thích sự sáng tạo và ham học hỏi của trẻ."
+        ],
+        benefit: "Hình thành tư duy logic sắc bén, giúp con học toán một cách nhẹ nhàng và hiệu quả."
+      }
     },
     {
       title: "Toán nâng cao",
       desc: "Củng cố kiến thức trọng tâm, luyện bài theo chuyên đề và nâng cao kết quả tại trường.",
       icon: <Trophy className="text-orange-600" />,
-      color: "bg-orange-50"
+      color: "bg-orange-50",
+      details: {
+        target: "Chinh phục các kỳ thi học sinh giỏi và thi chuyển cấp.",
+        content: [
+          "Hệ thống kiến thức trọng tâm và các chuyên đề toán học nâng cao.",
+          "Luyện tập các phương pháp giải toán nhanh và tư duy đột phá.",
+          "Tiếp cận các bộ đề thi thử sát với thực tế các kỳ thi quan trọng.",
+          "Rèn luyện kỹ năng trình bày bài làm chặt chẽ và chính xác."
+        ],
+        benefit: "Tự tin đối đầu với các bài toán khó và đạt kết quả cao trong các kỳ thi chuyên."
+      }
     }
   ];
 
@@ -366,7 +408,7 @@ const Programs = () => {
     <section id="programs" className="py-24 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Chương Trình Học Nổi Bật Tại Conlaso1</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-4">Chương Trình Học Nổi Bật Tại Conlaso1</h2>
           <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -374,7 +416,7 @@ const Programs = () => {
             <motion.div 
               key={i}
               whileHover={{ y: -10 }}
-              className={`${p.color} p-8 rounded-3xl transition-all border border-transparent hover:border-brand-accent/20 shadow-sm`}
+              className={`${p.color} p-8 rounded-3xl transition-all border border-transparent hover:border-brand-accent/20 shadow-sm flex flex-col`}
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md flex-shrink-0">
@@ -382,8 +424,11 @@ const Programs = () => {
                 </div>
                 <h3 className="text-lg font-bold text-brand-dark leading-tight">{p.title}</h3>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-6">{p.desc}</p>
-              <button className="text-brand-accent font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">{p.desc}</p>
+              <button 
+                onClick={() => setSelectedProgram(p)}
+                className="text-brand-accent font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all"
+              >
                 Xem chi tiết <ChevronRight size={16} />
               </button>
             </motion.div>
@@ -395,6 +440,86 @@ const Programs = () => {
           </a>
         </div>
       </div>
+
+      {/* Program Detail Modal */}
+      <AnimatePresence>
+        {selectedProgram && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedProgram(null)}
+              className="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden"
+            >
+              <button 
+                onClick={() => setSelectedProgram(null)}
+                className="absolute top-6 right-6 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors z-10"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="p-8 md:p-12">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 bg-brand-bg rounded-2xl flex items-center justify-center shadow-inner">
+                    {selectedProgram.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-brand-dark">{selectedProgram.title}</h3>
+                    <div className="h-1 w-12 bg-brand-accent rounded-full mt-2"></div>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Mục tiêu khóa học</h4>
+                    <p className="text-brand-dark font-medium text-lg leading-relaxed">
+                      {selectedProgram.details.target}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Nội dung đào tạo</h4>
+                    <ul className="space-y-3">
+                      {selectedProgram.details.content.map((item: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-3 text-gray-600">
+                          <div className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <CheckCircle2 size={12} />
+                          </div>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-brand-bg p-6 rounded-2xl border border-brand-accent/10">
+                    <h4 className="text-sm font-bold text-brand-accent uppercase tracking-wider mb-2">Kết quả đạt được</h4>
+                    <p className="text-brand-dark font-semibold">
+                      {selectedProgram.details.benefit}
+                    </p>
+                  </div>
+
+                  <div className="pt-4">
+                    <a 
+                      href="#register" 
+                      onClick={() => setSelectedProgram(null)}
+                      className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold text-center block transition-all shadow-lg shadow-brand-cta/20"
+                    >
+                      ĐĂNG KÝ TƯ VẤN CHI TIẾT
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
@@ -414,7 +539,7 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-8">Lý Do Nhiều Phụ Huynh Tin Tưởng Conlaso1</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-8">Lý Do Nhiều Phụ Huynh Tin Tưởng Conlaso1</h2>
             <div className="space-y-4">
               {reasons.map((reason, i) => (
                 <motion.div 
