@@ -26,6 +26,7 @@ import {
   Music,
   Heart
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { db, auth } from './firebase';
 import { 
   collection, 
@@ -978,8 +979,28 @@ const RegistrationForm = () => {
     note: ''
   });
 
+  useEffect(() => {
+    if (submitted) {
+      const element = document.getElementById('form-container');
+      if (element) {
+        // Use a small timeout to ensure the DOM has updated with the success message
+        setTimeout(() => {
+          const yOffset = -100; // Offset for header
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [submitted]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Manual validation check for mobile
+    if (!formData.parentName.trim() || !formData.phone.trim() || !formData.studentName.trim()) {
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('Submitting form...', formData);
@@ -1050,148 +1071,139 @@ const RegistrationForm = () => {
               </motion.a>
             </div>
           </div>
-          <div className="md:w-1/2 bg-white p-6 md:p-12 min-h-[400px]">
-            <AnimatePresence mode="wait">
-              {!submitted ? (
-                <motion.form 
-                  key="form"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onSubmit={handleSubmit} 
-                  className="space-y-4"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Họ tên phụ huynh</label>
-                      <input 
-                        required 
-                        type="text" 
-                        value={formData.parentName}
-                        onChange={e => setFormData({...formData, parentName: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
-                        placeholder="Nguyễn Văn A" 
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Số điện thoại</label>
-                      <input 
-                        required 
-                        type="tel" 
-                        value={formData.phone}
-                        onChange={e => setFormData({...formData, phone: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
-                        placeholder="09xx xxx xxx" 
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Tên học sinh</label>
-                      <input 
-                        required 
-                        type="text" 
-                        value={formData.studentName}
-                        onChange={e => setFormData({...formData, studentName: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
-                        placeholder="Nguyễn Văn B" 
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Lớp hiện tại</label>
-                      <select 
-                        value={formData.studentClass}
-                        onChange={e => setFormData({...formData, studentClass: e.target.value})}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all appearance-none"
-                      >
-                        {[...Array(12)].map((_, i) => <option key={i} value={i+1}>Lớp {i+1}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-4 flex-wrap">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.subjects.includes('Tiếng Anh')}
-                          onChange={() => toggleSubject('Tiếng Anh')}
-                          className="w-5 h-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" 
-                        />
-                        <span className="text-sm font-medium text-gray-700">Tiếng Anh</span>
-                      </label>
-                      
-                      <span className="text-xs font-bold text-gray-400 uppercase">Môn quan tâm</span>
-
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          checked={formData.subjects.includes('Toán')}
-                          onChange={() => toggleSubject('Toán')}
-                          className="w-5 h-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" 
-                        />
-                        <span className="text-sm font-medium text-gray-700">Toán</span>
-                      </label>
-                    </div>
+          <div id="form-container" className={`md:w-1/2 p-6 md:p-12 min-h-[500px] flex flex-col transition-colors duration-500 ${submitted ? 'bg-green-50/50' : 'bg-white'}`}>
+            {!submitted ? (
+              <form 
+                onSubmit={handleSubmit} 
+                className="space-y-4 flex-1"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Họ tên phụ huynh</label>
+                    <input 
+                      required 
+                      type="text" 
+                      value={formData.parentName}
+                      onChange={e => setFormData({...formData, parentName: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      placeholder="Nguyễn Văn A" 
+                    />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase">Ghi chú thêm</label>
-                    <textarea 
-                      value={formData.note}
-                      onChange={e => setFormData({...formData, note: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-24 resize-none" 
-                      placeholder="Con cần hỗ trợ thêm về..."
-                    ></textarea>
-                  </div>
-                  <button 
-                    type="submit" 
-                    disabled={loading}
-                    className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-cta/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    {loading ? 'ĐANG GỬI...' : 'ĐĂNG KÝ NGAY'} <ArrowRight size={20} />
-                  </button>
-                </motion.form>
-              ) : (
-                <motion.div 
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="w-full flex flex-col items-center justify-center text-center py-6"
-                >
-                  <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle2 size={32} />
-                  </div>
-                  <h3 className="text-xl font-bold text-brand-dark mb-2">Đăng Ký Thành Công!</h3>
-                  <p className="text-gray-500 text-sm mb-6">Cảm ơn bạn đã tin tưởng Conlaso1. Vui lòng kết bạn Zalo và tham gia nhóm để nhận thông tin nhanh nhất.</p>
-                  
-                  <div className="bg-brand-bg p-3 md:p-4 rounded-2xl border border-gray-100 mb-4 md:mb-6 w-full">
-                    <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2 md:mb-3">Quét mã Zalo cá nhân</p>
-                    <img 
-                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://zalo.me/0961771339" 
-                      alt="Zalo QR 0961771339" 
-                      className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-lg shadow-sm mb-2"
-                      referrerPolicy="no-referrer"
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Số điện thoại</label>
+                    <input 
+                      required 
+                      type="tel" 
+                      value={formData.phone}
+                      onChange={e => setFormData({...formData, phone: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      placeholder="09xx xxx xxx" 
                     />
-                    <p className="text-xs md:text-sm font-bold text-brand-dark">0961 771 339</p>
                   </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Tên học sinh</label>
+                    <input 
+                      required 
+                      type="text" 
+                      value={formData.studentName}
+                      onChange={e => setFormData({...formData, studentName: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      placeholder="Nguyễn Văn B" 
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Lớp hiện tại</label>
+                    <select 
+                      value={formData.studentClass}
+                      onChange={e => setFormData({...formData, studentClass: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all appearance-none"
+                    >
+                      {[...Array(12)].map((_, i) => <option key={i} value={i+1}>Lớp {i+1}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={formData.subjects.includes('Tiếng Anh')}
+                        onChange={() => toggleSubject('Tiếng Anh')}
+                        className="w-5 h-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" 
+                      />
+                      <span className="text-sm font-medium text-gray-700">Tiếng Anh</span>
+                    </label>
+                    
+                    <span className="text-xs font-bold text-gray-400 uppercase">Môn quan tâm</span>
 
-                  <button 
-                    onClick={() => {
-                      // Open personal Zalo first
-                      window.open('https://zalo.me/0961771339', '_blank');
-                      // Small delay to ensure the first one isn't immediately blocked/overwritten on some browsers
-                      setTimeout(() => {
-                        window.open('https://zalo.me/g/xwj9meojzis4xau4s7eh', '_blank');
-                      }, 500);
-                    }}
-                    className="w-full bg-brand-accent hover:bg-brand-dark text-white py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 mb-4"
-                  >
-                    THAM GIA NHÓM ZALO <MessageCircle size={18} />
-                  </button>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={formData.subjects.includes('Toán')}
+                        onChange={() => toggleSubject('Toán')}
+                        className="w-5 h-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" 
+                      />
+                      <span className="text-sm font-medium text-gray-700">Toán</span>
+                    </label>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Ghi chú thêm</label>
+                  <textarea 
+                    value={formData.note}
+                    onChange={e => setFormData({...formData, note: e.target.value})}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-24 resize-none" 
+                    placeholder="Con cần hỗ trợ thêm về..."
+                  ></textarea>
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-cta/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? 'ĐANG GỬI...' : 'ĐĂNG KÝ NGAY'} <ArrowRight size={20} />
+                </button>
+              </form>
+            ) : (
+              <div className="w-full flex flex-col items-center justify-center text-center py-6 flex-1">
+                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                  <CheckCircle2 size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-brand-dark mb-2">Đăng Ký Thành Công!</h3>
+                <p className="text-gray-500 text-sm mb-6">Cảm ơn bạn đã tin tưởng Conlaso1. Vui lòng kết bạn Zalo và tham gia nhóm để nhận thông tin nhanh nhất.</p>
+                
+                <div className="bg-brand-bg p-4 md:p-6 rounded-2xl border border-gray-100 mb-4 md:mb-6 w-full shadow-inner flex flex-col items-center">
+                  <p className="text-xs md:text-sm font-bold text-gray-500 uppercase mb-3 md:mb-4">Quét mã Zalo cá nhân</p>
+                  <div className="bg-white p-2 rounded-xl shadow-md mb-3">
+                    <QRCodeSVG 
+                      value="https://zalo.me/0961771339" 
+                      size={128}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+                  <p className="text-sm md:text-lg font-bold text-brand-dark">0961 771 339</p>
+                </div>
 
-                  <button onClick={() => setSubmitted(false)} className="text-gray-400 text-xs hover:text-brand-accent transition-colors">Gửi lại form khác</button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                <motion.button 
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  onClick={() => {
+                    window.open('https://zalo.me/0961771339', '_blank');
+                    setTimeout(() => {
+                      window.open('https://zalo.me/g/xwj9meojzis4xau4s7eh', '_blank');
+                    }, 500);
+                  }}
+                  className="w-full bg-brand-accent hover:bg-brand-dark text-white py-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 mb-4 shadow-lg shadow-brand-accent/20"
+                >
+                  THAM GIA NHÓM ZALO <MessageCircle size={20} />
+                </motion.button>
+
+                <button onClick={() => setSubmitted(false)} className="text-gray-400 text-xs hover:text-brand-accent transition-colors">Gửi lại form khác</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
