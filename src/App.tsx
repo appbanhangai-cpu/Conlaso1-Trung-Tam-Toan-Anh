@@ -213,7 +213,7 @@ const StickyNav = () => {
 };
 
 const Hero = () => (
-  <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#0a0f1a]">
+  <section id="home" className="relative min-h-[85vh] flex items-center pt-16 overflow-hidden bg-[#0a0f1a]">
     {/* Background Pattern */}
     <div className="absolute inset-0">
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,_rgba(37,99,235,0.15),_transparent_50%)]" />
@@ -223,53 +223,53 @@ const Hero = () => (
     </div>
     
     <div className="container mx-auto px-4 relative z-10">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
+      <div className="grid md:grid-cols-2 gap-10 items-center">
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="mb-4">
-            <span className="text-white/70 text-sm font-medium tracking-[0.2em] uppercase">
+          <div className="mb-3">
+            <span className="text-white/70 text-[10px] font-medium tracking-[0.2em] uppercase">
               TRUNG TÂM TIẾNG ANH & TOÁN
             </span>
           </div>
-          <h1 className="font-serif leading-[1.1] mb-8">
-            <div className="text-3xl md:text-5xl lg:text-6xl font-bold mb-2 drop-shadow-lg">
+          <h1 className="font-serif leading-[1.1] mb-6">
+            <div className="text-2xl md:text-4xl lg:text-5xl font-bold mb-1 drop-shadow-lg">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-cta to-yellow-200">Conlaso1 –</span>
-              <span className="text-white ml-4">Đồng</span>
+              <span className="text-white ml-3">Đồng</span>
             </div>
-            <div className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 flex items-baseline gap-4 drop-shadow-lg">
+            <div className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-1 flex items-baseline gap-3 drop-shadow-lg">
               Hành Cùng Con
-              <span className="text-lg md:text-2xl text-gray-400 font-sans font-medium">Chinh</span>
+              <span className="text-base md:text-xl text-gray-400 font-sans font-medium">Chinh</span>
             </div>
-            <div className="text-3xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cta via-yellow-200 to-brand-cta drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="text-2xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cta via-yellow-200 to-brand-cta drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               Phục Tương Lai
             </div>
           </h1>
-          <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-xl leading-relaxed">
+          <p className="text-gray-300 text-base md:text-lg mb-8 max-w-xl leading-relaxed">
             Giúp học sinh xây chắc nền tảng Toán và Tiếng Anh, nâng cao tư duy, tăng sự tự tin và cải thiện kết quả học tập rõ rệt.
           </p>
-          <div className="flex flex-wrap gap-4 mb-10">
-            <a href="#register" className="w-full sm:w-auto bg-brand-cta hover:bg-opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-cta/20">
-              ĐĂNG KÝ HỌC THỬ <ChevronRight size={20} />
+          <div className="flex flex-wrap gap-3 mb-8">
+            <a href="#register" className="w-full sm:w-auto bg-brand-cta hover:bg-opacity-90 text-white px-6 py-3 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-cta/20">
+              ĐĂNG KÝ HỌC THỬ <ChevronRight size={18} />
             </a>
-            <a href="#register" className="hidden sm:inline-block bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all border border-white/20">
+            <a href="#register" className="hidden sm:inline-block bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold text-base transition-all border border-white/20">
               NHẬN TƯ VẤN NGAY
             </a>
           </div>
-          <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
+          <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
             <div className="text-white">
-              <div className="text-brand-cta font-bold text-xl">100%</div>
-              <div className="text-xs text-gray-400">Lớp học theo trình độ</div>
+              <div className="text-brand-cta font-bold text-lg">100%</div>
+              <div className="text-[10px] text-gray-400">Lớp học theo trình độ</div>
             </div>
             <div className="text-white">
-              <div className="text-brand-cta font-bold text-xl">Tận tâm</div>
-              <div className="text-xs text-gray-400">Giáo viên chuyên môn</div>
+              <div className="text-brand-cta font-bold text-lg">Tận tâm</div>
+              <div className="text-[10px] text-gray-400">Giáo viên chuyên môn</div>
             </div>
             <div className="text-white">
-              <div className="text-brand-cta font-bold text-xl">Sát sao</div>
-              <div className="text-xs text-gray-400">Theo sát từng học sinh</div>
+              <div className="text-brand-cta font-bold text-lg">Sát sao</div>
+              <div className="text-[10px] text-gray-400">Theo sát từng học sinh</div>
             </div>
           </div>
         </motion.div>
@@ -280,7 +280,7 @@ const Hero = () => (
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative"
         >
-          <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white/10">
+          <div className="relative z-10 rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
             <img 
               src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=1000" 
               alt="Học sinh Conlaso1" 
@@ -405,7 +405,7 @@ const Programs = () => {
   ];
 
   return (
-    <section id="programs" className="py-24 bg-white">
+    <section id="programs" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-4">Chương Trình Học Nổi Bật Tại Conlaso1</h2>
@@ -456,41 +456,41 @@ const Programs = () => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden"
+              className="relative bg-white w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden"
             >
               <button 
                 onClick={() => setSelectedProgram(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors z-10"
+                className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors z-10"
               >
-                <X size={20} />
+                <X size={16} />
               </button>
               
-              <div className="p-8 md:p-12">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-16 h-16 bg-brand-bg rounded-2xl flex items-center justify-center shadow-inner">
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-brand-bg rounded-xl flex items-center justify-center shadow-inner">
                     {selectedProgram.icon}
                   </div>
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-brand-dark">{selectedProgram.title}</h3>
-                    <div className="h-1 w-12 bg-brand-accent rounded-full mt-2"></div>
+                    <h3 className="text-xl md:text-2xl font-bold text-brand-dark">{selectedProgram.title}</h3>
+                    <div className="h-1 w-10 bg-brand-accent rounded-full mt-1"></div>
                   </div>
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Mục tiêu khóa học</h4>
-                    <p className="text-brand-dark font-medium text-lg leading-relaxed">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Mục tiêu khóa học</h4>
+                    <p className="text-brand-dark font-medium text-base leading-relaxed">
                       {selectedProgram.details.target}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Nội dung đào tạo</h4>
-                    <ul className="space-y-3">
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Nội dung đào tạo</h4>
+                    <ul className="space-y-2">
                       {selectedProgram.details.content.map((item: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-3 text-gray-600">
-                          <div className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <CheckCircle2 size={12} />
+                        <li key={idx} className="flex items-start gap-2 text-gray-600 text-sm">
+                          <div className="w-4 h-4 bg-green-100 text-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <CheckCircle2 size={10} />
                           </div>
                           <span>{item}</span>
                         </li>
@@ -498,18 +498,18 @@ const Programs = () => {
                     </ul>
                   </div>
 
-                  <div className="bg-brand-bg p-6 rounded-2xl border border-brand-accent/10">
-                    <h4 className="text-sm font-bold text-brand-accent uppercase tracking-wider mb-2">Kết quả đạt được</h4>
-                    <p className="text-brand-dark font-semibold">
+                  <div className="bg-brand-bg p-4 rounded-xl border border-brand-accent/10">
+                    <h4 className="text-[10px] font-bold text-brand-accent uppercase tracking-wider mb-1">Kết quả đạt được</h4>
+                    <p className="text-brand-dark font-semibold text-sm">
                       {selectedProgram.details.benefit}
                     </p>
                   </div>
 
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <a 
                       href="#register" 
                       onClick={() => setSelectedProgram(null)}
-                      className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold text-center block transition-all shadow-lg shadow-brand-cta/20"
+                      className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-3 rounded-xl font-bold text-center block transition-all shadow-lg shadow-brand-cta/20 text-sm"
                     >
                       ĐĂNG KÝ TƯ VẤN CHI TIẾT
                     </a>
@@ -535,33 +535,33 @@ const WhyChooseUs = () => {
   ];
 
   return (
-    <section id="why" className="py-24 bg-brand-bg">
+    <section id="why" className="py-16 bg-brand-bg">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-8">Lý Do Nhiều Phụ Huynh Tin Tưởng Conlaso1</h2>
-            <div className="space-y-4">
+            <h2 className="text-xl md:text-2xl font-bold text-brand-dark mb-6">Lý Do Nhiều Phụ Huynh Tin Tưởng Conlaso1</h2>
+            <div className="space-y-3">
               {reasons.map((reason, i) => (
                 <motion.div 
                   key={i}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100"
+                  className="flex items-start gap-3 bg-white p-3 rounded-xl shadow-sm border border-gray-100"
                 >
-                  <div className="w-6 h-6 bg-brand-accent text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 size={14} />
+                  <div className="w-5 h-5 bg-brand-accent text-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CheckCircle2 size={12} />
                   </div>
-                  <p className="text-gray-700 font-medium">{reason}</p>
+                  <p className="text-gray-700 font-medium text-sm">{reason}</p>
                 </motion.div>
               ))}
             </div>
-            <p className="mt-8 text-brand-accent font-bold italic text-lg">
+            <p className="mt-6 text-brand-accent font-bold italic text-base">
               "Conlaso1 không chỉ giúp con học tốt hơn, mà còn giúp con tự tin hơn mỗi ngày."
             </p>
           </div>
           <div className="relative">
-            <div className="rounded-3xl overflow-hidden shadow-2xl">
+            <div className="rounded-3xl overflow-hidden shadow-xl">
               <img 
                 src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1000" 
                 alt="Lớp học Conlaso1" 
@@ -569,7 +569,6 @@ const WhyChooseUs = () => {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-cta rounded-full -z-10 opacity-20 blur-2xl"></div>
           </div>
         </div>
       </div>
@@ -602,21 +601,21 @@ const Benefits = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Con Nhận Được Gì Khi Học Tại Conlaso1?</h2>
-          <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full"></div>
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Con Nhận Được Gì Khi Học Tại Conlaso1?</h2>
+          <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full"></div>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((b, i) => (
-            <div key={i} className="flex items-center gap-4 mb-8 md:block md:text-center group">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-brand-accent rounded-2xl flex items-center justify-center flex-shrink-0 md:mx-auto mb-0 md:mb-6 group-hover:rotate-6 transition-transform shadow-lg shadow-brand-accent/20">
+            <div key={i} className="flex items-center gap-4 mb-6 md:block md:text-center group">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-brand-accent rounded-2xl flex items-center justify-center flex-shrink-0 md:mx-auto mb-0 md:mb-4 group-hover:rotate-6 transition-transform shadow-lg shadow-brand-accent/20">
                 {b.icon}
               </div>
               <div className="text-left md:text-center">
-                <h3 className="text-xl font-bold text-brand-dark mb-1 md:mb-3">{b.title}</h3>
-                <p className="text-gray-600 text-sm">{b.desc}</p>
+                <h3 className="text-lg font-bold text-brand-dark mb-1 md:mb-2">{b.title}</h3>
+                <p className="text-gray-600 text-xs">{b.desc}</p>
               </div>
             </div>
           ))}
@@ -627,35 +626,35 @@ const Benefits = () => {
 };
 
 const Teachers = () => (
-  <section id="teachers" className="py-24 bg-brand-dark text-white">
+  <section id="teachers" className="py-16 bg-brand-dark text-white">
     <div className="container mx-auto px-4">
-      <div className="grid md:grid-cols-2 gap-16 items-center">
+      <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="order-2 md:order-1">
           <img 
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=1000" 
             alt="Giáo viên Conlaso1" 
-            className="rounded-3xl shadow-2xl border-4 border-white/10"
+            className="rounded-3xl shadow-xl border-4 border-white/10"
             referrerPolicy="no-referrer"
           />
         </div>
         <div className="order-1 md:order-2">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Đội Ngũ Giáo Viên Tận Tâm – Phương Pháp Giảng Dạy Dễ Hiểu</h2>
-          <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Đội Ngũ Giáo Viên Tận Tâm – Phương Pháp Giảng Dạy Dễ Hiểu</h2>
+          <p className="text-gray-300 text-base mb-6 leading-relaxed">
             Tại Conlaso1, đội ngũ giáo viên luôn đặt sự tiến bộ của học sinh làm trung tâm. Mỗi buổi học được xây dựng với mục tiêu rõ ràng, giúp học sinh tiếp thu kiến thức theo cách dễ hiểu, dễ nhớ và áp dụng được ngay.
           </p>
-          <div className="space-y-6">
+          <div className="space-y-4">
             {[
               { title: "Giảng dạy tận tâm", desc: "Luôn kiên nhẫn và đồng hành cùng sự tiến bộ của con." },
               { title: "Theo sát tiến độ từng học sinh", desc: "Nắm rõ điểm mạnh, điểm yếu để có lộ trình riêng." },
               { title: "Hỗ trợ phụ huynh đồng hành", desc: "Báo cáo thường xuyên và tư vấn phương pháp học tại nhà." }
             ].map((item, i) => (
-              <div key={i} className="flex gap-4">
-                <div className="w-12 h-12 bg-brand-accent/20 rounded-xl flex items-center justify-center flex-shrink-0 text-brand-accent">
-                  <CheckCircle2 size={24} />
+              <div key={i} className="flex gap-3">
+                <div className="w-10 h-10 bg-brand-accent/20 rounded-xl flex items-center justify-center flex-shrink-0 text-brand-accent">
+                  <CheckCircle2 size={20} />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold mb-1">{item.title}</h4>
-                  <p className="text-gray-400 text-sm">{item.desc}</p>
+                  <h4 className="text-base font-bold mb-0.5">{item.title}</h4>
+                  <p className="text-gray-400 text-xs">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -717,33 +716,33 @@ const Testimonials = () => {
   ];
 
   return (
-    <section id="feedback" className="py-24 bg-brand-bg">
+    <section id="feedback" className="py-16 bg-brand-bg">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Phản Hồi Từ Phụ Huynh Và Học Sinh</h2>
-          <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full mb-8"></div>
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Phản Hồi Từ Phụ Huynh Và Học Sinh</h2>
+          <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full mb-6"></div>
           <button 
             onClick={() => setShowForm(true)}
-            className="bg-brand-cta hover:bg-opacity-90 text-white px-8 py-3 rounded-full font-bold shadow-lg shadow-brand-cta/20 transition-all flex items-center gap-2 mx-auto"
+            className="bg-brand-cta hover:bg-opacity-90 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand-cta/20 transition-all flex items-center gap-2 mx-auto text-sm"
           >
-            <MessageCircle size={20} /> GỬI ĐÁNH GIÁ & BÌNH LUẬN
+            <MessageCircle size={18} /> GỬI ĐÁNH GIÁ & BÌNH LUẬN
           </button>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6">
           {/* Static Reviews */}
           {staticReviews.map((r, i) => (
             <motion.div 
               key={`static-${i}`}
               whileHover={{ y: -5 }}
-              className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative"
+              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative"
             >
-              <div className="flex gap-1 text-brand-cta mb-6">
-                {[...Array(r.rating)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+              <div className="flex gap-1 text-brand-cta mb-4">
+                {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
               </div>
-              <p className="text-gray-600 italic mb-8 leading-relaxed">"{r.text}"</p>
-              <div className="flex items-center gap-4">
-                <img src={r.avatar} alt={r.name} className="w-12 h-12 rounded-full" />
-                <div className="font-bold text-brand-dark text-sm">{r.name}</div>
+              <p className="text-gray-600 italic mb-6 leading-relaxed text-sm">"{r.text}"</p>
+              <div className="flex items-center gap-3">
+                <img src={r.avatar} alt={r.name} className="w-10 h-10 rounded-full" />
+                <div className="font-bold text-brand-dark text-xs">{r.name}</div>
               </div>
             </motion.div>
           ))}
@@ -752,19 +751,19 @@ const Testimonials = () => {
             <motion.div 
               key={r.id}
               whileHover={{ y: -5 }}
-              className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative"
+              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative"
             >
-              <div className="flex gap-1 text-brand-cta mb-6">
-                {[...Array(r.rating)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+              <div className="flex gap-1 text-brand-cta mb-4">
+                {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
               </div>
-              <p className="text-gray-600 italic mb-8 leading-relaxed">"{r.content}"</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold">
+              <p className="text-gray-600 italic mb-6 leading-relaxed text-sm">"{r.content}"</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold text-sm">
                   {r.name[0]}
                 </div>
                 <div>
-                  <div className="font-bold text-brand-dark text-sm">{r.name}</div>
-                  <div className="text-[10px] text-gray-400 uppercase font-bold">{r.role}</div>
+                  <div className="font-bold text-brand-dark text-xs">{r.name}</div>
+                  <div className="text-[9px] text-gray-400 uppercase font-bold">{r.role}</div>
                 </div>
               </div>
             </motion.div>
@@ -916,22 +915,22 @@ const Process = () => {
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Quy Trình Đồng Hành Cùng Học Sinh</h2>
-          <p className="text-gray-500">Mỗi học sinh đều có định hướng học tập phù hợp với năng lực và mục tiêu riêng.</p>
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Quy Trình Đồng Hành Cùng Học Sinh</h2>
+          <p className="text-gray-500 text-sm">Mỗi học sinh đều có định hướng học tập phù hợp với năng lực và mục tiêu riêng.</p>
         </div>
-        <div className="grid md:grid-cols-4 gap-8 relative">
+        <div className="grid md:grid-cols-4 gap-6 relative">
           {/* Connector Line */}
-          <div className="absolute top-12 left-0 w-full h-0.5 bg-gray-100 hidden md:block -z-10"></div>
+          <div className="absolute top-10 left-0 w-full h-0.5 bg-gray-100 hidden md:block -z-10"></div>
           {steps.map((step, i) => (
             <div key={i} className="text-center">
-              <div className="w-16 h-16 bg-brand-accent text-white rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold shadow-lg shadow-brand-accent/20 border-4 border-white">
+              <div className="w-14 h-14 bg-brand-accent text-white rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold shadow-lg shadow-brand-accent/20 border-4 border-white">
                 {i + 1}
               </div>
-              <h3 className="text-lg font-bold text-brand-dark mb-2">{step.title}</h3>
-              <p className="text-gray-500 text-sm">{step.desc}</p>
+              <h3 className="text-base font-bold text-brand-dark mb-1">{step.title}</h3>
+              <p className="text-gray-500 text-xs">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -999,21 +998,21 @@ const Pricing = () => {
   const sortedPackages = [...packages].sort((a, b) => a.order - b.order);
 
   return (
-    <section id="pricing" className="py-24 bg-brand-bg">
+    <section id="pricing" className="py-16 bg-brand-bg">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4 uppercase tracking-tight">Chọn Lộ Trình Phù Hợp Cho Con</h2>
-          <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full mb-6"></div>
-          <p className="text-gray-500 max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3 uppercase tracking-tight">Chọn Lộ Trình Phù Hợp Cho Con</h2>
+          <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full mb-4"></div>
+          <p className="text-gray-500 max-w-2xl mx-auto text-sm">
             Mỗi học sinh có một năng lực khác nhau. Conlaso1 giúp phụ huynh chọn đúng chương trình để con học chắc hơn, tiến bộ nhanh hơn.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {sortedPackages.map((p, i) => (
             <div 
               key={i} 
-              className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 flex flex-col ${
+              className={`relative p-6 rounded-[2.5rem] border transition-all duration-500 flex flex-col ${
                 p.featured 
                   ? 'bg-brand-dark text-white border-brand-accent shadow-2xl md:scale-105 z-10' 
                   : 'bg-white text-brand-dark border-gray-100 shadow-sm hover:shadow-md'
@@ -1025,24 +1024,24 @@ const Pricing = () => {
                 </div>
               )}
               
-              <div className="mb-6">
-                <h3 className="text-xl font-bold mb-2">{p.title}</h3>
-                <p className={`text-xs ${p.featured ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
+              <div className="mb-4">
+                <h3 className="text-lg font-bold mb-1">{p.title}</h3>
+                <p className={`text-[10px] ${p.featured ? 'text-gray-400' : 'text-gray-500'} leading-relaxed`}>
                   {p.desc}
                 </p>
               </div>
 
-              <div className="mb-8">
+              <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black">{p.price}</span>
-                  <span className={`text-sm ${p.featured ? 'text-gray-400' : 'text-gray-500'}`}>{p.period}</span>
+                  <span className="text-2xl font-black">{p.price}</span>
+                  <span className={`text-xs ${p.featured ? 'text-gray-400' : 'text-gray-500'}`}>{p.period}</span>
                 </div>
               </div>
 
-              <ul className="space-y-4 mb-10 flex-grow">
+              <ul className="space-y-3 mb-8 flex-grow">
                 {p.features.map((f, j) => (
-                  <li key={j} className="flex items-start gap-3 text-sm">
-                    <CheckCircle2 size={18} className="text-brand-accent flex-shrink-0 mt-0.5" />
+                  <li key={j} className="flex items-start gap-2 text-xs">
+                    <CheckCircle2 size={14} className="text-brand-accent flex-shrink-0 mt-0.5" />
                     <span className={p.featured ? 'text-gray-200' : 'text-gray-600'}>{f}</span>
                   </li>
                 ))}
@@ -1051,7 +1050,7 @@ const Pricing = () => {
               <div className="mt-auto">
                 <a 
                   href="#register" 
-                  className={`block w-full text-center py-4 rounded-2xl font-bold transition-all shadow-lg ${
+                  className={`block w-full text-center py-3 rounded-2xl font-bold transition-all shadow-lg text-sm ${
                     p.featured 
                       ? 'bg-brand-cta hover:bg-opacity-90 text-white shadow-brand-cta/20' 
                       : 'bg-brand-bg hover:bg-gray-200 text-brand-dark shadow-gray-200/20'
@@ -1068,21 +1067,21 @@ const Pricing = () => {
         </div>
 
         {/* Help Block */}
-        <div className="mt-16 max-w-3xl mx-auto bg-white rounded-[2rem] p-8 md:p-10 text-center shadow-xl border border-gray-50 relative overflow-hidden">
+        <div className="mt-12 max-w-3xl mx-auto bg-white rounded-[2rem] p-6 md:p-8 text-center shadow-xl border border-gray-50 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-accent"></div>
-          <h3 className="text-xl md:text-2xl font-bold text-brand-dark mb-4">Phụ huynh chưa biết chọn gói nào?</h3>
-          <p className="text-gray-500 mb-8 text-sm md:text-base">
+          <h3 className="text-lg md:text-xl font-bold text-brand-dark mb-3">Phụ huynh chưa biết chọn gói nào?</h3>
+          <p className="text-gray-500 mb-6 text-xs md:text-sm">
             Đừng lo. Đội ngũ Conlaso1 sẽ kiểm tra trình độ và tư vấn lộ trình phù hợp nhất cho từng học sinh.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <a 
               href="#register" 
-              className="w-full md:w-auto bg-brand-accent hover:bg-brand-dark text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-brand-accent/20"
+              className="w-full md:w-auto bg-brand-accent hover:bg-brand-dark text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-brand-accent/20 text-sm"
             >
               NHẬN TƯ VẤN MIỄN PHÍ
             </a>
-            <div className="flex items-center gap-3 text-brand-dark font-bold">
-              <Phone size={20} className="text-brand-accent" />
+            <div className="flex items-center gap-3 text-brand-dark font-bold text-sm">
+              <Phone size={18} className="text-brand-accent" />
               <span>0961 771 339 - 0988 771 339</span>
             </div>
           </div>
@@ -1164,27 +1163,27 @@ const RegistrationForm = () => {
   };
 
   return (
-    <section id="register" className="py-24 bg-white">
+    <section id="register" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto bg-brand-accent rounded-[3rem] shadow-2xl flex flex-col md:flex-row">
-          <div className="md:w-1/2 p-12 text-white flex flex-col justify-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Đăng Ký Nhận Tư Vấn Và Học Thử Miễn Phí</h2>
-            <p className="text-blue-100 mb-8 leading-relaxed">
+          <div className="md:w-1/2 p-8 md:p-10 text-white flex flex-col justify-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Đăng Ký Nhận Tư Vấn Và Học Thử Miễn Phí</h2>
+            <p className="text-blue-100 mb-6 leading-relaxed text-sm">
               Đội ngũ Conlaso1 sẽ liên hệ tư vấn lộ trình học tập phù hợp nhất cho con trong vòng 24h làm việc.
             </p>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <motion.a 
                 href="tel:0961771339"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="flex items-center gap-4 group cursor-pointer"
+                className="flex items-center gap-3 group cursor-pointer"
               >
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
-                  <Phone size={24} />
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
+                  <Phone size={20} />
                 </div>
                 <div>
-                  <div className="text-sm text-blue-200">Hotline hỗ trợ</div>
-                  <div className="font-bold group-hover:text-brand-cta transition-colors">0961 771 339 - 0988 771 339</div>
+                  <div className="text-[10px] text-blue-200 uppercase font-bold">Hotline hỗ trợ</div>
+                  <div className="font-bold group-hover:text-brand-cta transition-colors text-sm">0961 771 339 - 0988 771 339</div>
                 </div>
               </motion.a>
               <motion.a 
@@ -1193,19 +1192,19 @@ const RegistrationForm = () => {
                 rel="noopener noreferrer"
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                className="flex items-center gap-4 group cursor-pointer"
+                className="flex items-center gap-3 group cursor-pointer"
               >
-                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
-                  <MapPin size={24} />
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
+                  <MapPin size={20} />
                 </div>
                 <div>
-                  <div className="text-sm text-blue-200">Địa chỉ trung tâm</div>
-                  <div className="font-bold group-hover:text-brand-cta transition-colors">16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</div>
+                  <div className="text-[10px] text-blue-200 uppercase font-bold">Địa chỉ trung tâm</div>
+                  <div className="font-bold group-hover:text-brand-cta transition-colors text-sm">16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</div>
                 </div>
               </motion.a>
             </div>
           </div>
-          <div id="form-container" className={`md:w-1/2 p-6 md:p-12 min-h-[500px] flex flex-col transition-colors duration-500 ${submitted ? 'bg-green-50/50' : 'bg-white'}`}>
+          <div id="form-container" className={`md:w-1/2 p-6 md:p-10 min-h-[450px] flex flex-col transition-colors duration-500 ${submitted ? 'bg-green-50/50' : 'bg-white'}`}>
             {!submitted ? (
               <form 
                 onSubmit={handleSubmit} 
@@ -1356,43 +1355,43 @@ const RegistrationForm = () => {
 };
 
 const Location = () => (
-  <section id="location" className="py-24 bg-white">
+  <section id="location" className="py-16 bg-white">
     <div className="container mx-auto px-4">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Địa Chỉ Trung Tâm</h2>
-        <div className="w-20 h-1.5 bg-brand-accent mx-auto rounded-full mb-8"></div>
-        <p className="text-gray-500 max-w-2xl mx-auto">
+      <div className="text-center mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Địa Chỉ Trung Tâm</h2>
+        <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full mb-6"></div>
+        <p className="text-gray-500 max-w-2xl mx-auto text-sm">
           Ghé thăm Conlaso1 tại cơ sở Hoàn Kiếm để được tư vấn trực tiếp và tham quan môi trường học tập hiện đại.
         </p>
       </div>
-      <div className="max-w-5xl mx-auto rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-brand-bg relative group">
+      <div className="max-w-5xl mx-auto rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-brand-bg relative group">
         <iframe 
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0425379475673!2d105.85203917430619!3d21.03098388770399!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc03b32172d%3A0xe34ede870aed8c6a!2zMTZBIFAuIEzDvSBUaMOhaSBU4buVLCBMw70gVGjDoWkgVOG7lSwgSG_DoG4gS2nhur9tLCBIw6AgTuG7mWkgMTAwMDAwLCBWaWV0bmFt!5e0!3m2!1sen!2s!4v1775490211345!5m2!1sen!2s" 
           width="100%" 
-          height="500" 
+          height="400" 
           style={{ border: 0 }} 
           allowFullScreen 
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
           className="grayscale hover:grayscale-0 transition-all duration-700"
         ></iframe>
-        <div className="absolute bottom-8 left-8 right-8 md:right-auto md:w-80 bg-brand-dark/90 backdrop-blur-md p-6 rounded-3xl text-white shadow-xl border border-white/10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-brand-accent rounded-xl flex items-center justify-center text-white">
-              <MapPin size={20} />
+        <div className="absolute bottom-6 left-6 right-6 md:right-auto md:w-72 bg-brand-dark/90 backdrop-blur-md p-5 rounded-3xl text-white shadow-xl border border-white/10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 bg-brand-accent rounded-xl flex items-center justify-center text-white">
+              <MapPin size={16} />
             </div>
-            <h4 className="font-bold">Cơ sở Hoàn Kiếm</h4>
+            <h4 className="font-bold text-sm">Cơ sở Hoàn Kiếm</h4>
           </div>
-          <p className="text-sm text-gray-300 mb-4 leading-relaxed">
+          <p className="text-xs text-gray-300 mb-3 leading-relaxed">
             16A Lý Thái Tổ, Lý Thái Tổ, Hoàn Kiếm, Hà Nội 100000, Vietnam
           </p>
           <a 
             href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-brand-accent font-bold text-sm hover:gap-3 transition-all"
+            className="inline-flex items-center gap-2 text-brand-accent font-bold text-xs hover:gap-3 transition-all"
           >
-            Chỉ đường trên Google Maps <ArrowRight size={16} />
+            Chỉ đường trên Google Maps <ArrowRight size={14} />
           </a>
         </div>
       </div>
