@@ -676,7 +676,7 @@ const Testimonials = () => {
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         whileHover={{ scale: 1.1 }}
-        className="fixed bottom-6 right-6 z-[90] bg-white p-2 rounded-[2rem] shadow-2xl flex items-center justify-center group border border-gray-100"
+        className="fixed bottom-6 right-6 z-[90] bg-white p-2 rounded-[2rem] shadow-2xl hidden md:flex items-center justify-center group border border-gray-100"
       >
         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center relative">
           <div className="w-10 h-10 bg-red-500 rounded-full animate-pulse" />
@@ -982,14 +982,17 @@ const RegistrationForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log('Submitting form...', formData);
       const path = 'registrations';
       await addDoc(collection(db, path), {
         ...formData,
         createdAt: serverTimestamp(),
         status: 'new'
       });
+      console.log('Form submitted successfully');
       setSubmitted(true);
     } catch (error) {
+      console.error('Form submission error:', error);
       handleFirestoreError(error, 'create', 'registrations');
     } finally {
       setLoading(false);
@@ -1008,7 +1011,7 @@ const RegistrationForm = () => {
   return (
     <section id="register" className="py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="max-w-5xl mx-auto bg-brand-accent rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row">
+        <div className="max-w-5xl mx-auto bg-brand-accent rounded-[3rem] shadow-2xl flex flex-col md:flex-row">
           <div className="md:w-1/2 p-12 text-white flex flex-col justify-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Đăng Ký Nhận Tư Vấn Và Học Thử Miễn Phí</h2>
             <p className="text-blue-100 mb-8 leading-relaxed">
@@ -1047,7 +1050,7 @@ const RegistrationForm = () => {
               </motion.a>
             </div>
           </div>
-          <div className="md:w-1/2 bg-white p-12">
+          <div className="md:w-1/2 bg-white p-6 md:p-12 min-h-[400px]">
             <AnimatePresence mode="wait">
               {!submitted ? (
                 <motion.form 
@@ -1152,7 +1155,7 @@ const RegistrationForm = () => {
                   key="success"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="h-full flex flex-col items-center justify-center text-center py-6"
+                  className="w-full flex flex-col items-center justify-center text-center py-6"
                 >
                   <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle2 size={32} />
@@ -1160,15 +1163,15 @@ const RegistrationForm = () => {
                   <h3 className="text-xl font-bold text-brand-dark mb-2">Đăng Ký Thành Công!</h3>
                   <p className="text-gray-500 text-sm mb-6">Cảm ơn bạn đã tin tưởng Conlaso1. Vui lòng kết bạn Zalo và tham gia nhóm để nhận thông tin nhanh nhất.</p>
                   
-                  <div className="bg-brand-bg p-4 rounded-2xl border border-gray-100 mb-6 w-full">
-                    <p className="text-xs font-bold text-gray-500 uppercase mb-3">Quét mã Zalo cá nhân</p>
+                  <div className="bg-brand-bg p-3 md:p-4 rounded-2xl border border-gray-100 mb-4 md:mb-6 w-full">
+                    <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2 md:mb-3">Quét mã Zalo cá nhân</p>
                     <img 
                       src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://zalo.me/0961771339" 
                       alt="Zalo QR 0961771339" 
-                      className="w-32 h-32 mx-auto rounded-lg shadow-sm mb-2"
+                      className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-lg shadow-sm mb-2"
                       referrerPolicy="no-referrer"
                     />
-                    <p className="text-sm font-bold text-brand-dark">0961 771 339</p>
+                    <p className="text-xs md:text-sm font-bold text-brand-dark">0961 771 339</p>
                   </div>
 
                   <button 
