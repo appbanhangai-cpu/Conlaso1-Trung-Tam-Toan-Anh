@@ -2473,6 +2473,7 @@ const ChatAssistant = () => {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const recognitionRef = React.useRef<any>(null);
   const isVoiceModeRef = React.useRef(isVoiceMode);
@@ -2516,10 +2517,12 @@ const ChatAssistant = () => {
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'vi-VN';
+      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         console.log('Speech recognition started');
         setIsListening(true);
+        setError(null);
       };
       recognition.onend = () => {
         console.log('Speech recognition ended');
@@ -2528,6 +2531,16 @@ const ChatAssistant = () => {
       recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
+        if (event.error === 'not-allowed') {
+          setError('Vui lòng cấp quyền Microphone');
+        } else if (event.error === 'no-speech') {
+          setError('Không nghe thấy gì...');
+        } else {
+          setError('Lỗi kết nối Mic');
+        }
+        
+        // Auto-clear error after 3s
+        setTimeout(() => setError(null), 3000);
       };
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
@@ -2546,37 +2559,28 @@ const ChatAssistant = () => {
   const toggleListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Vui lòng sử dụng Chrome hoặc Edge.');
+      setError('Trình duyệt không hỗ trợ Mic');
+      setTimeout(() => setError(null), 3000);
       return;
     }
 
     if (!recognitionRef.current) {
+      // Re-init if lost
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = 'vi-VN';
+      recognition.maxAlternatives = 1;
       
-      recognition.onstart = () => {
-        console.log('Mic started');
-        setIsListening(true);
-      };
-      
-      recognition.onend = () => {
-        console.log('Mic ended');
-        setIsListening(false);
-      };
-      
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
       recognition.onerror = (event: any) => {
-        console.error('Mic error:', event.error);
         setIsListening(false);
-        if (event.error === 'not-allowed') {
-          alert('Vui lòng cho phép truy cập Microphone trong cài đặt trình duyệt để sử dụng tính năng này.');
-        }
+        setError(event.error === 'not-allowed' ? 'Cần quyền Mic' : 'Lỗi Mic');
+        setTimeout(() => setError(null), 3000);
       };
-      
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
-        console.log('Mic result:', transcript);
         if (isVoiceModeRef.current) {
           handleSendRef.current?.(transcript);
         } else {
@@ -2589,24 +2593,23 @@ const ChatAssistant = () => {
     try {
       if (isListeningRef.current) {
         recognitionRef.current.stop();
-        setIsListening(false);
       } else {
         // Ensure any previous speech is stopped
         window.speechSynthesis.cancel();
         setIsSpeaking(false);
         
-        // Re-init if needed
         recognitionRef.current.start();
-        setIsListening(true);
       }
     } catch (error: any) {
       console.error('Mic toggle error:', error);
       if (error.name === 'InvalidStateError' || (error.message && error.message.includes('already started'))) {
+        // Already running, just sync state
         setIsListening(true);
       } else {
         setIsListening(false);
-        // Force re-init on next try
         recognitionRef.current = null;
+        setError('Không thể bật Mic');
+        setTimeout(() => setError(null), 3000);
       }
     }
   };
@@ -2901,6 +2904,15 @@ const ChatAssistant = () => {
             </div>
 
             <div className="p-4 bg-white border-t border-gray-100 flex flex-col gap-3">
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[10px] text-red-500 font-bold text-center bg-red-50 py-1 rounded-lg border border-red-100"
+                >
+                  {error}
+                </motion.div>
+              )}
               <div className="flex gap-2">
                 <input 
                   type="text" 
