@@ -39,6 +39,7 @@
         "role": { "type": "string", "description": "Vai trò (Phụ huynh/Học sinh)" },
         "content": { "type": "string", "description": "Nội dung đánh giá" },
         "rating": { "type": "number", "description": "Số sao đánh giá (1-5)" },
+        "photoUrl": { "type": "string", "description": "Ảnh người đánh giá" },
         "approved": { "type": "boolean", "description": "Trạng thái phê duyệt" },
         "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian gửi" }
       },

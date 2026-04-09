@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Phone, 
@@ -8,7 +8,9 @@ import {
   CheckCircle2, 
   Users, 
   Star, 
-  ChevronRight, 
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Menu, 
   X, 
   GraduationCap, 
@@ -37,12 +39,13 @@ import {
   Code,
   MessageSquare,
   Cpu,
-  Check
+  Check,
+  Camera,
+  Upload,
+  RefreshCw
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
-import * as XLSX from 'xlsx';
-import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 import { db, auth, storage } from './firebase';
 import { 
@@ -91,6 +94,7 @@ interface Testimonial {
   role: string;
   content: string;
   rating: number;
+  photoUrl?: string;
   approved: boolean;
   createdAt: any;
 }
@@ -188,6 +192,7 @@ const Navbar = () => {
               src="/logo.png" 
               alt="Conlaso1 Logo" 
               className="w-full h-full object-contain z-10"
+              decoding="async"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.nextElementSibling?.classList.remove('hidden');
@@ -672,6 +677,8 @@ const WhyChooseUs = () => {
                 src="https://res.cloudinary.com/dukjtusv9/image/upload/v1775736094/Logo_t8v7vj.jpg" 
                 alt="Lý do tin tưởng Conlaso1" 
                 className="w-full h-auto"
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
               />
             </div>
@@ -740,6 +747,8 @@ const Teachers = () => (
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=1000" 
             alt="Giáo viên Conlaso1" 
             className="rounded-3xl shadow-xl border-4 border-white/10"
+            loading="lazy"
+            decoding="async"
             referrerPolicy="no-referrer"
           />
         </div>
@@ -775,6 +784,17 @@ const Testimonials = () => {
   const [realReviews, setRealReviews] = useState<Testimonial[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'up' | 'down') => {
+    if (scrollRef.current) {
+      const scrollAmount = 300;
+      scrollRef.current.scrollBy({
+        top: direction === 'up' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, () => {
@@ -863,53 +883,89 @@ const Testimonials = () => {
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Phản Hồi Từ Phụ Huynh Và Học Sinh</h2>
           <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full mb-6"></div>
-          <button 
-            onClick={() => setShowForm(true)}
-            className="bg-brand-cta hover:bg-opacity-90 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand-cta/20 transition-all flex items-center gap-2 mx-auto text-sm"
-          >
-            <MessageCircle size={18} /> GỬI ĐÁNH GIÁ & BÌNH LUẬN
-          </button>
+          <div className="flex items-center justify-center gap-4 mx-auto">
+            <button 
+              onClick={() => setShowForm(true)}
+              className="bg-brand-cta hover:bg-opacity-90 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand-cta/20 transition-all flex items-center gap-2 text-sm"
+            >
+              <MessageCircle size={18} /> GỬI ĐÁNH GIÁ & BÌNH LUẬN
+            </button>
+            
+            {(staticReviews.length + realReviews.length) >= 9 && (
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => scroll('up')}
+                  className="w-8 h-8 bg-white text-brand-dark rounded-lg flex items-center justify-center shadow-[0_4px_0_0_rgba(0,0,0,0.1)] active:shadow-none active:translate-y-[2px] transition-all border border-gray-100"
+                  title="Cuộn lên"
+                >
+                  <ChevronUp size={18} />
+                </button>
+                <button 
+                  onClick={() => scroll('down')}
+                  className="w-8 h-8 bg-white text-brand-dark rounded-lg flex items-center justify-center shadow-[0_4px_0_0_rgba(0,0,0,0.1)] active:shadow-none active:translate-y-[2px] transition-all border border-gray-100"
+                  title="Cuộn xuống"
+                >
+                  <ChevronDown size={18} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Static Reviews */}
-          {staticReviews.map((r, i) => (
-            <motion.div 
-              key={`static-${i}`}
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative"
-            >
-              <div className="flex gap-1 text-brand-cta mb-4">
-                {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-              </div>
-              <p className="text-gray-600 italic mb-6 leading-relaxed text-sm">"{r.text}"</p>
-              <div className="flex items-center gap-3">
-                <img src={r.avatar} alt={r.name} className="w-10 h-10 rounded-full" />
-                <div className="font-bold text-brand-dark text-xs">{r.name}</div>
-              </div>
-            </motion.div>
-          ))}
-          {/* Real Reviews */}
-          {realReviews.map((r) => (
-            <motion.div 
-              key={r.id}
-              whileHover={{ y: -5 }}
-              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative"
-            >
-              <div className="flex gap-1 text-brand-cta mb-4">
-                {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-              </div>
-              <p className="text-gray-600 italic mb-6 leading-relaxed text-sm">"{r.content}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold text-sm">
-                  {r.name[0]}
+        <div className="relative">
+          <div 
+            ref={scrollRef}
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ${(staticReviews.length + realReviews.length) >= 9 ? 'max-h-[650px] overflow-y-auto pr-2 custom-scrollbar mask-fade' : ''}`}
+          >
+            {/* Static Reviews */}
+            {staticReviews.map((r, i) => (
+              <motion.div 
+                key={`static-${i}`}
+                whileHover={{ y: -5 }}
+                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative h-full flex flex-col"
+              >
+                <div className="flex gap-1 text-brand-cta mb-4">
+                  {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
                 </div>
-                <div>
+                <p className="text-gray-600 italic mb-6 leading-relaxed text-sm flex-grow">"{r.text}"</p>
+                <div className="flex items-center gap-3 mt-auto">
+                  <img 
+                    src={r.avatar} 
+                    alt={r.name} 
+                    className="w-10 h-10 rounded-full" 
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="font-bold text-brand-dark text-xs">{r.name}</div>
-                  <div className="text-[9px] text-gray-400 uppercase font-bold">{r.role}</div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+            {/* Real Reviews */}
+            {realReviews.map((r) => (
+              <motion.div 
+                key={r.id}
+                whileHover={{ y: -5 }}
+                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative h-full flex flex-col"
+              >
+                <div className="flex gap-1 text-brand-cta mb-4">
+                  {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                </div>
+                <p className="text-gray-600 italic mb-6 leading-relaxed text-sm flex-grow">"{r.content}"</p>
+                <div className="flex items-center gap-3 mt-auto">
+                  {r.photoUrl ? (
+                    <img src={r.photoUrl} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-10 h-10 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold text-sm">
+                      {r.name[0]}
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-bold text-brand-dark text-xs">{r.name}</div>
+                    <div className="text-[9px] text-gray-400 uppercase font-bold">{r.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -920,16 +976,16 @@ const Testimonials = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-[2.5rem] p-8 md:p-12 w-full max-w-lg shadow-2xl relative"
+              className="bg-white rounded-[2rem] p-6 md:p-8 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <button 
                 onClick={() => setShowForm(false)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-brand-dark transition-colors"
+                className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors z-10"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
-              <h3 className="text-2xl font-bold text-brand-dark mb-2">Gửi đánh giá của bạn</h3>
-              <p className="text-gray-500 text-sm mb-8">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
+              <h3 className="text-xl font-bold text-brand-dark mb-1">Gửi đánh giá của bạn</h3>
+              <p className="text-gray-500 text-xs mb-6">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
               
               <TestimonialForm onSuccess={() => setShowForm(false)} />
             </motion.div>
@@ -948,18 +1004,126 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     role: 'Phụ huynh',
     content: ''
   });
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [aiEnhancedContent, setAiEnhancedContent] = useState('');
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    if (isCameraOpen && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [isCameraOpen]);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      streamRef.current = stream;
+      setIsCameraOpen(true);
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      alert("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        setPhoto(dataUrl);
+        stopCamera();
+      }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const enhanceContent = async () => {
+    if (!formData.content.trim()) return;
+    setIsAiProcessing(true);
+    try {
+      const { GoogleGenAI } = await import("@google/genai") as any;
+      const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `Bạn là một chuyên gia viết nội dung marketing. Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (Toán, Tiếng Anh, AI) để nó trở nên chuyên nghiệp, truyền cảm hứng và hay hơn, nhưng vẫn giữ đúng ý nghĩa gốc và cảm xúc chân thật. Đánh giá gốc: "${formData.content}". Chỉ trả về nội dung đánh giá đã viết lại, không thêm bất kỳ lời dẫn nào.`;
+
+      const result = await model.generateContent(prompt);
+      const enhanced = result.response.text().trim();
+      setAiEnhancedContent(enhanced);
+    } catch (error) {
+      console.error("AI Enhancement Error:", error);
+    } finally {
+      setIsAiProcessing(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const finalContent = aiEnhancedContent || formData.content;
+      
+      // AI Sentiment Analysis for Auto-Approval
+      let isApproved = false;
+      if (rating >= 4) {
+        try {
+          const { GoogleGenAI } = await import("@google/genai") as any;
+          const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+          const analysisPrompt = `Phân tích nội dung đánh giá sau đây về trung tâm Conlaso1: "${finalContent}". Nếu nội dung là tích cực, khen ngợi trung tâm hoặc thầy cô, hãy trả về "POSITIVE". Nếu nội dung có ý chê bai, phàn nàn, tiêu cực hoặc không liên quan, hãy trả về "NEGATIVE". Chỉ trả về một từ duy nhất.`;
+
+          const result = await model.generateContent(analysisPrompt);
+          const sentiment = result.response.text().trim().toUpperCase();
+          if (sentiment === "POSITIVE") {
+            isApproved = true;
+          }
+        } catch (err) {
+          console.error("Sentiment Analysis Error:", err);
+        }
+      }
+
       await addDoc(collection(db, 'testimonials'), {
         ...formData,
+        content: finalContent,
         rating,
-        approved: false,
+        photoUrl: photo,
+        approved: isApproved,
         createdAt: serverTimestamp()
       });
-      alert('Cảm ơn bạn! Đánh giá của bạn đã được gửi và đang chờ phê duyệt.');
+
+      if (isApproved) {
+        alert('Cảm ơn bạn! Đánh giá của bạn đã được đăng công khai.');
+      } else {
+        alert('Cảm ơn bạn! Đánh giá của bạn đã được gửi và đang chờ quản trị viên phê duyệt.');
+      }
       onSuccess();
     } catch (error) {
       handleFirestoreError(error, 'create', 'testimonials');
@@ -970,7 +1134,69 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex justify-center gap-2 mb-6">
+      {/* Photo Section */}
+      <div className="flex flex-col items-center gap-3 mb-4">
+        <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center group">
+          {photo ? (
+            <img src={photo} alt="Preview" className="w-full h-full object-cover" />
+          ) : isCameraOpen ? (
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+          ) : (
+            <div className="text-center p-4">
+              <Camera className="mx-auto text-gray-400 mb-2" size={24} />
+              <span className="text-[10px] text-gray-400 font-bold uppercase">Chụp ảnh chân dung</span>
+            </div>
+          )}
+          
+          {photo && (
+            <button 
+              type="button"
+              onClick={() => setPhoto(null)}
+              className="absolute top-1 right-1 bg-white/80 p-1 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          {!isCameraOpen ? (
+            <button 
+              type="button"
+              onClick={startCamera}
+              className="flex items-center gap-2 px-4 py-2 bg-brand-accent/10 text-brand-accent rounded-full text-xs font-bold hover:bg-brand-accent/20 transition-all"
+            >
+              <Camera size={14} /> MỞ CAMERA
+            </button>
+          ) : (
+            <button 
+              type="button"
+              onClick={capturePhoto}
+              className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-full text-xs font-bold hover:bg-green-600 transition-all"
+            >
+              <Camera size={14} /> CHỤP ẢNH
+            </button>
+          )}
+          
+          <label className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-xs font-bold hover:bg-gray-200 transition-all cursor-pointer">
+            <Upload size={14} /> TẢI ẢNH LÊN
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+          </label>
+
+          {isCameraOpen && (
+            <button 
+              type="button"
+              onClick={stopCamera}
+              className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-full text-xs font-bold hover:bg-red-200 transition-all"
+            >
+              ĐÓNG
+            </button>
+          )}
+        </div>
+        <canvas ref={canvasRef} className="hidden" />
+      </div>
+
+      <div className="flex justify-center gap-2 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -979,13 +1205,14 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
             className="transition-transform hover:scale-110"
           >
             <Star 
-              size={32} 
+              size={28} 
               fill={star <= rating ? "#FFC107" : "none"} 
               stroke={star <= rating ? "#FFC107" : "#CBD5E1"} 
             />
           </button>
         ))}
       </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase">Họ tên</label>
@@ -1010,6 +1237,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </select>
         </div>
       </div>
+
       <div className="space-y-1">
         <label className="text-[10px] font-bold text-gray-400 uppercase">Nội dung đánh giá & Bình luận</label>
         <textarea 
@@ -1019,13 +1247,49 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-32 resize-none text-sm"
           placeholder="Chia sẻ cảm nhận hoặc bình luận của bạn về trung tâm..."
         ></textarea>
+        
+        {formData.content.length > 10 && !aiEnhancedContent && (
+          <button 
+            type="button"
+            onClick={enhanceContent}
+            disabled={isAiProcessing}
+            className="flex items-center gap-2 text-brand-accent text-[10px] font-bold uppercase hover:underline disabled:opacity-50"
+          >
+            {isAiProcessing ? <RefreshCw size={12} className="animate-spin" /> : <Brain size={12} />}
+            {isAiProcessing ? "Đang tối ưu..." : "AI Tối ưu nội dung hay hơn"}
+          </button>
+        )}
       </div>
+
+      {aiEnhancedContent && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-brand-accent/5 rounded-xl border border-brand-accent/20"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-bold text-brand-accent uppercase flex items-center gap-1">
+              <Brain size={12} /> Nội dung AI gợi ý
+            </span>
+            <button 
+              type="button"
+              onClick={() => setAiEnhancedContent('')}
+              className="text-[10px] text-gray-400 hover:text-red-500 font-bold uppercase"
+            >
+              Hủy
+            </button>
+          </div>
+          <p className="text-sm text-gray-700 italic leading-relaxed">"{aiEnhancedContent}"</p>
+          <p className="text-[9px] text-gray-400 mt-2 italic">* Bạn có thể bấm "Gửi đánh giá" để sử dụng nội dung này.</p>
+        </motion.div>
+      )}
+
       <button 
         type="submit" 
-        disabled={loading}
-        className="w-full bg-brand-accent hover:bg-brand-dark text-white py-4 rounded-xl font-bold shadow-lg shadow-brand-accent/20 transition-all disabled:opacity-50"
+        disabled={loading || isAiProcessing}
+        className="w-full bg-brand-accent hover:bg-brand-dark text-white py-3 rounded-xl font-bold shadow-lg shadow-brand-accent/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
-        {loading ? 'ĐANG GỬI...' : 'GỬI ĐÁNH GIÁ'}
+        {loading ? <RefreshCw size={20} className="animate-spin" /> : 'GỬI ĐÁNH GIÁ'}
       </button>
     </form>
   );
@@ -1680,7 +1944,8 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
     return matchesFilter && matchesClass && matchesSubject && matchesSearch;
   });
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
+    const XLSX = await import('xlsx');
     const dataToExport = activeTab === 'registrations' ? filteredRegs : students;
     const worksheet = XLSX.utils.json_to_sheet(dataToExport.map(item => {
       if (activeTab === 'registrations') {
@@ -2000,7 +2265,14 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0">
                       {s.photoUrl ? (
-                        <img src={s.photoUrl} alt={s.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <img 
+                          src={s.photoUrl} 
+                          alt={s.name} 
+                          className="w-full h-full object-cover" 
+                          loading="lazy"
+                          decoding="async"
+                          referrerPolicy="no-referrer" 
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300">
                           <Users size={24} />
@@ -2827,6 +3099,7 @@ const ChatAssistant = () => {
     setLoading(true);
 
     try {
+      const { GoogleGenAI } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       
       // Build history for context
@@ -3684,7 +3957,13 @@ const AddStudentModal = ({ isOpen, onClose, initialData, mode = 'add' }: { isOpe
           <div className="md:col-span-2 flex flex-col items-center mb-2">
             <div className="w-20 h-20 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 overflow-hidden relative group">
               {preview ? (
-                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                <img 
+                  src={preview} 
+                  alt="Preview" 
+                  className="w-full h-full object-cover" 
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : (
                 <div className="w-full h-full flex flex-center items-center justify-center text-gray-300">
                   <Users size={32} />
