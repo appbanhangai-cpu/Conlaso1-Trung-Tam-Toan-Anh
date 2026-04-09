@@ -1074,20 +1074,32 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       const { GoogleGenAI, ThinkingLevel } = await import("@google/genai") as any;
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
-      const prompt = `Bạn là một chuyên gia viết nội dung marketing. Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (Toán, Tiếng Anh, AI) để nó trở nên chuyên nghiệp, truyền cảm hứng và hay hơn, nhưng vẫn giữ đúng ý nghĩa gốc và cảm xúc chân thật. Đánh giá gốc: "${formData.content}". Chỉ trả về nội dung đánh giá đã viết lại, không thêm bất kỳ lời dẫn nào.`;
+      const prompt = `Bạn là một chuyên gia viết nội dung marketing và biên tập viên cao cấp. 
+      Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (chuyên dạy Toán, Tiếng Anh và AI) để nó trở nên:
+      1. Chuyên nghiệp và lịch sự hơn.
+      2. Truyền cảm hứng và giàu cảm xúc tích cực.
+      3. Sử dụng từ ngữ phong phú, gãy gọn nhưng vẫn giữ đúng ý nghĩa gốc và sự chân thật của người viết.
+      
+      Đánh giá gốc: "${formData.content}"
+      
+      Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn, giải thích hay ký tự đặc biệt nào khác.`;
 
       const result = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
-        }
+        contents: [{ role: "user", parts: [{ text: prompt }] }]
       });
       
-      const enhanced = result.text?.trim() || '';
-      setAiEnhancedContent(enhanced);
+      const enhanced = result.text?.trim();
+      console.log("AI Enhanced Content Result:", enhanced);
+      if (enhanced) {
+        setAiEnhancedContent(enhanced);
+      } else {
+        console.error("AI returned empty content");
+        alert("Không thể tối ưu nội dung lúc này. Vui lòng thử lại sau.");
+      }
     } catch (error) {
       console.error("AI Enhancement Error:", error);
+      alert("Đã có lỗi xảy ra khi tối ưu nội dung.");
     } finally {
       setIsAiProcessing(false);
     }
@@ -1117,10 +1129,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
           const result = await ai.models.generateContent({
             model: "gemini-3-flash-preview",
-            contents: analysisPrompt,
-            config: {
-              thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
-            }
+            contents: [{ role: "user", parts: [{ text: analysisPrompt }] }]
           });
           
           const sentiment = result.text?.trim().toUpperCase();
@@ -1303,13 +1312,25 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <span className="text-[10px] font-bold text-brand-accent uppercase flex items-center gap-1">
               <Brain size={12} /> Nội dung AI gợi ý
             </span>
-            <button 
-              type="button"
-              onClick={() => setAiEnhancedContent('')}
-              className="text-[10px] text-gray-400 hover:text-red-500 font-bold uppercase"
-            >
-              Hủy
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, content: aiEnhancedContent });
+                  setAiEnhancedContent('');
+                }}
+                className="text-[10px] text-brand-accent hover:text-brand-dark font-bold uppercase"
+              >
+                Sử dụng
+              </button>
+              <button 
+                type="button"
+                onClick={() => setAiEnhancedContent('')}
+                className="text-[10px] text-gray-400 hover:text-red-500 font-bold uppercase"
+              >
+                Hủy
+              </button>
+            </div>
           </div>
           <p className="text-sm text-gray-700 italic leading-relaxed">"{aiEnhancedContent}"</p>
           <p className="text-[9px] text-gray-400 mt-2 italic">* Bạn có thể bấm "Gửi đánh giá" để sử dụng nội dung này.</p>
