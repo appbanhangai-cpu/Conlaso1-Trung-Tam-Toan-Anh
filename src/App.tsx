@@ -1452,34 +1452,12 @@ const RegistrationForm = () => {
                     </label>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Trường học</label>
-                    <input 
-                      type="text" 
-                      value={formData.school}
-                      onChange={e => setFormData({...formData, school: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
-                      placeholder="Trường Tiểu học..." 
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Địa chỉ</label>
-                    <input 
-                      type="text" 
-                      value={formData.address}
-                      onChange={e => setFormData({...formData, address: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
-                      placeholder="Quận/Huyện, Tỉnh/TP" 
-                    />
-                  </div>
-                </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-gray-500 uppercase">Ghi chú thêm</label>
                   <textarea 
                     value={formData.note}
                     onChange={e => setFormData({...formData, note: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-24 resize-none" 
+                    className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-24 resize-none" 
                     placeholder="Con cần hỗ trợ thêm về..."
                   ></textarea>
                 </div>
