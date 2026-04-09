@@ -78,7 +78,11 @@ interface Registration {
   subjects: string[];
   note: string;
   createdAt: any;
-  status: 'new' | 'contacted' | 'enrolled';
+  status: 'new' | 'contacted' | 'enrolled' | 'paid';
+  courseTitle?: string;
+  paymentAmount?: string;
+  school?: string;
+  address?: string;
 }
 
 interface Testimonial {
@@ -278,7 +282,7 @@ const Hero = () => (
             </div>
           </h1>
           <p className="text-gray-300 text-base md:text-lg mb-8 max-w-xl leading-relaxed">
-            Giúp học sinh xây chắc nền tảng Toán và Tiếng Anh, nâng cao tư duy, tăng sự tự tin và cải thiện kết quả học tập rõ rệt.
+            Giúp học sinh vững Toán – giỏi Anh – làm chủ AI, nâng tầm tư duy, tự tin bứt phá kết quả học tập.
           </p>
           <div className="flex flex-wrap gap-3 mb-8">
             <a href="#register" className="w-full sm:w-auto bg-brand-cta hover:bg-opacity-90 text-white px-6 py-3 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-cta/20">
@@ -1235,7 +1239,9 @@ const RegistrationForm = () => {
     studentName: '',
     studentClass: '1',
     subjects: [] as string[],
-    note: ''
+    note: '',
+    school: '',
+    address: ''
   });
 
   useEffect(() => {
@@ -1446,6 +1452,28 @@ const RegistrationForm = () => {
                     </label>
                   </div>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Trường học</label>
+                    <input 
+                      type="text" 
+                      value={formData.school}
+                      onChange={e => setFormData({...formData, school: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      placeholder="Trường Tiểu học..." 
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase whitespace-nowrap">Địa chỉ</label>
+                    <input 
+                      type="text" 
+                      value={formData.address}
+                      onChange={e => setFormData({...formData, address: e.target.value})}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all" 
+                      placeholder="Quận/Huyện, Tỉnh/TP" 
+                    />
+                  </div>
+                </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-gray-500 uppercase">Ghi chú thêm</label>
                   <textarea 
@@ -1530,14 +1558,14 @@ const Location = () => (
       </div>
       <div className="max-w-5xl mx-auto rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-brand-bg relative group">
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2826.974999509655!2d105.85203917377719!3d21.030983887705098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc03b32172d%3A0xe34ede870aed8c6a!2zMTZBIFAuIEzDvSBUaMOhaSBU4buVLCBMw70gVGjDoWkgVOG7lSwgSG_DoG4gS2nhur9tLCBIw6AgTuG7mWkgMTAwMDAwLCBWaWV0bmFt!5e1!3m2!1sen!2s!4v1775639518847!5m2!1sen!2s" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2826.974999509655!2d105.85203917377719!3d21.030983887705098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab4f9b964bbb%3A0x31f3eedc604e8bad!2zQsOhbmggTcOsIENo4buRdA!5e1!3m2!1sen!2s!4v1775733856656!5m2!1sen!2s" 
           width="100%" 
           height="400" 
           style={{ border: 0 }} 
           allowFullScreen 
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
-          className="grayscale hover:grayscale-0 transition-all duration-700"
+          className="hover:shadow-inner transition-all duration-700"
         ></iframe>
         <div className="absolute bottom-6 left-6 right-6 md:right-auto md:w-72 bg-brand-dark/90 backdrop-blur-md p-5 rounded-3xl text-white shadow-xl border border-white/10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
           <div className="flex items-center gap-3 mb-3">
@@ -1547,10 +1575,10 @@ const Location = () => (
             <h4 className="font-bold text-sm">Cơ sở Hoàn Kiếm</h4>
           </div>
           <p className="text-xs text-gray-300 mb-3 leading-relaxed">
-            16A Lý Thái Tổ, Lý Thái Tổ, Hoàn Kiếm, Hà Nội 100000, Vietnam
+            16A P. Lý Thái Tổ, Lý Thái Tổ, Hoàn Kiếm, Hà Nội 100000, Vietnam
           </p>
           <a 
-            href="https://www.google.com/maps/dir/?api=1&destination=21.030983887705098,105.85203917377719" 
+            href="https://www.google.com/maps/dir/?api=1&destination=16A%20P.%20Lý%20Thái%20Tổ,%20Hoàn%20Kiếm,%20Hà%20Nội" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-brand-accent font-bold text-xs hover:gap-3 transition-all"
@@ -1580,6 +1608,7 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   const [isEditRegModalOpen, setIsEditRegModalOpen] = useState(false);
   const [selectedStudentToEdit, setSelectedStudentToEdit] = useState<Student | null>(null);
   const [isEditStudentModalOpen, setIsEditStudentModalOpen] = useState(false);
+  const [showAllColumns, setShowAllColumns] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -1683,9 +1712,11 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
           'Lớp': r.studentClass,
           'Tên phụ huynh': r.parentName,
           'Số điện thoại': r.phone,
+          'Khóa học': r.courseTitle || 'Đăng ký tư vấn',
           'Môn học': r.subjects?.join(', '),
+          'Số tiền': r.paymentAmount || '',
           'Ghi chú': r.note,
-          'Trạng thái': r.status === 'new' ? 'Mới' : r.status === 'contacted' ? 'Đã liên hệ' : 'Đã nhập học',
+          'Trạng thái': r.status === 'new' ? 'Mới' : r.status === 'contacted' ? 'Đã liên hệ' : r.status === 'paid' ? 'Đã thanh toán' : 'Đã nhập học',
           'Ngày đăng ký': r.createdAt?.toDate?.()?.toLocaleString() || ''
         };
       } else {
@@ -1790,13 +1821,10 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                 </div>
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
                   <button 
-                    onClick={() => {
-                      setSelectedRegForStudent(null);
-                      setIsAddStudentModalOpen(true);
-                    }}
-                    className="px-4 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition-all whitespace-nowrap"
+                    onClick={() => setShowAllColumns(!showAllColumns)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${showAllColumns ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600 border border-red-100 hover:bg-red-100'}`}
                   >
-                    Thêm TT
+                    {showAllColumns ? 'Thu gọn' : 'All TT'}
                   </button>
                   {(['all', 'new', 'contacted', 'enrolled'] as const).map((f) => (
                     <button
@@ -1844,6 +1872,14 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                 <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
                   <tr>
                     <th className="px-6 py-4">Học sinh / Phụ huynh</th>
+                    {showAllColumns && (
+                      <>
+                        <th className="px-6 py-4">Trường & Địa chỉ</th>
+                        <th className="px-6 py-4">Khóa học</th>
+                        <th className="px-6 py-4">Đã nộp tiền</th>
+                        <th className="px-6 py-4">Môn học</th>
+                      </>
+                    )}
                     <th className="px-6 py-4">Liên hệ</th>
                     <th className="px-6 py-4">Trạng thái</th>
                     <th className="px-6 py-4 text-right">Thao tác</th>
@@ -1854,8 +1890,41 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                     <tr key={reg.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="font-bold text-brand-dark">{reg.studentName || 'Không tên'}</div>
-                        <div className="text-xs text-gray-500">PH: {reg.parentName || 'N/A'} - Lớp {reg.studentClass || 'N/A'}</div>
+                        <div className="text-xs text-gray-500">
+                          {reg.parentName ? `PH: ${reg.parentName}` : ''} 
+                          {reg.studentClass ? ` - Lớp ${reg.studentClass}` : ''}
+                          {!reg.parentName && !reg.studentClass ? 'Thông tin bổ sung trống' : ''}
+                        </div>
                       </td>
+                      {showAllColumns && (
+                        <>
+                          <td className="px-6 py-4">
+                            <div className="text-xs font-bold text-brand-dark">{reg.school || 'Chưa cập nhật'}</div>
+                            <div className="text-[10px] text-gray-400">{reg.address || 'Chưa có địa chỉ'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-xs font-bold text-brand-accent">{reg.courseTitle || 'Đăng ký tư vấn'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {reg.paymentAmount ? (
+                              <div className="text-xs font-black text-green-600 bg-green-50 px-2 py-1 rounded-lg border border-green-100 inline-block">
+                                {reg.paymentAmount}
+                              </div>
+                            ) : (
+                              <span className="text-gray-300 text-[10px] italic">Chưa nộp</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-wrap gap-1">
+                              {reg.subjects && reg.subjects.length > 0 ? reg.subjects.map((s, idx) => (
+                                <span key={idx} className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold border border-blue-100">
+                                  {s}
+                                </span>
+                              )) : <span className="text-gray-400 text-[10px] italic">Chưa chọn</span>}
+                            </div>
+                          </td>
+                        </>
+                      )}
                       <td className="px-6 py-4 text-sm">{reg.phone || 'N/A'}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -1865,11 +1934,13 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                             className={`text-xs font-bold px-3 py-1 rounded-full border-none outline-none cursor-pointer ${
                               (reg.status || 'new') === 'new' ? 'bg-yellow-100 text-yellow-700' :
                               reg.status === 'contacted' ? 'bg-blue-100 text-blue-700' :
+                              reg.status === 'paid' ? 'bg-purple-100 text-purple-700' :
                               'bg-green-100 text-green-700'
                             }`}
                           >
                             <option value="new">Mới</option>
                             <option value="contacted">Đã liên hệ</option>
+                            <option value="paid">Đã thanh toán</option>
                             <option value="enrolled">Đã nhập học</option>
                           </select>
                           {reg.status === 'enrolled' && (
@@ -1905,7 +1976,7 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">
+                      <td colSpan={showAllColumns ? 8 : 4} className="px-6 py-12 text-center text-gray-400 italic">
                         Không tìm thấy dữ liệu nào phù hợp.
                       </td>
                     </tr>
@@ -2141,6 +2212,7 @@ const PaymentModal = ({
   const [phone, setPhone] = useState('');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [step, setStep] = useState<'info' | 'qr' | 'success'>('info');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -2166,14 +2238,36 @@ const PaymentModal = ({
     }
   };
 
-  const handleDone = () => {
-    setStep('success');
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#2563eb', '#f59e0b', '#ef4444']
-    });
+  const handleDone = async () => {
+    setLoading(true);
+    try {
+      const path = 'registrations';
+      await addDoc(collection(db, path), {
+        studentName,
+        phone,
+        subjects: selectedSubjects,
+        courseTitle: pkg.title,
+        paymentAmount: pkg.price,
+        status: 'paid',
+        createdAt: serverTimestamp(),
+        parentName: '', // Info not collected in payment modal
+        studentClass: '', // Info not collected in payment modal
+        note: `Thanh toán qua QR: ${pkg.title}`
+      });
+      
+      setStep('success');
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#2563eb', '#f59e0b', '#ef4444']
+      });
+    } catch (error) {
+      console.error('Error saving payment registration:', error);
+      handleFirestoreError(error, 'create', 'registrations');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const downloadQR = () => {
@@ -2338,7 +2432,7 @@ const PaymentModal = ({
                 className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
               >
                 <CheckCircle2 size={18} />
-                TÔI ĐÃ CHUYỂN KHOẢN XÔNG
+                TÔI ĐÃ CHUYỂN KHOẢN XONG
               </button>
               <button 
                 onClick={onClose}
@@ -3116,7 +3210,7 @@ export default function App() {
                   <ul className="space-y-4 text-gray-400">
                     <li className="flex items-start gap-3">
                       <MapPin size={20} className="text-brand-accent flex-shrink-0" />
-                      <span>16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội</span>
+                      <span>16A P. Lý Thái Tổ - Hoàn Kiếm - Hà Nội</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <Phone size={20} className="text-brand-accent flex-shrink-0" />
@@ -3197,7 +3291,9 @@ const EditRegistrationModal = ({ isOpen, onClose, registration }: { isOpen: bool
     studentName: '',
     studentClass: '',
     subjects: [] as string[],
-    note: ''
+    note: '',
+    school: '',
+    address: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -3210,7 +3306,9 @@ const EditRegistrationModal = ({ isOpen, onClose, registration }: { isOpen: bool
         studentName: registration.studentName || '',
         studentClass: registration.studentClass || '',
         subjects: registration.subjects || [],
-        note: registration.note || ''
+        note: registration.note || '',
+        school: registration.school || '',
+        address: registration.address || ''
       });
     }
     setError(null);
@@ -3299,6 +3397,24 @@ const EditRegistrationModal = ({ isOpen, onClose, registration }: { isOpen: bool
                 className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
               />
             </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Trường học</label>
+              <input 
+                type="text" 
+                value={formData.school}
+                onChange={e => setFormData({...formData, school: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Địa chỉ</label>
+              <input 
+                type="text" 
+                value={formData.address}
+                onChange={e => setFormData({...formData, address: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -3377,8 +3493,8 @@ const AddStudentModal = ({ isOpen, onClose, initialData, mode = 'add' }: { isOpe
         setFormData({
           name: initialData.studentName || '',
           phone: initialData.phone || '',
-          school: '',
-          address: '',
+          school: initialData.school || '',
+          address: initialData.address || '',
           class: initialData.studentClass || '',
           subjects: initialData.subjects || []
         });
