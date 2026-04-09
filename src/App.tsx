@@ -2191,6 +2191,7 @@ const PaymentModal = ({
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [step, setStep] = useState<'info' | 'qr' | 'success'>('info');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -2198,8 +2199,27 @@ const PaymentModal = ({
       setStudentName('');
       setPhone('');
       setSelectedSubjects([]);
+      setError(null);
     }
   }, [isOpen]);
+
+  const getCalculatedPrice = () => {
+    if (!pkg) return { display: '', numeric: 0 };
+    const basePrice = parseInt(pkg.price.replace(/\D/g, ''));
+    let finalPrice = basePrice;
+    
+    // Multiply by number of subjects
+    if (selectedSubjects.length > 0) {
+      finalPrice = basePrice * selectedSubjects.length;
+    }
+    
+    return {
+      display: finalPrice.toLocaleString('vi-VN') + 'đ',
+      numeric: finalPrice
+    };
+  };
+
+  const calculatedPrice = getCalculatedPrice();
 
   const toggleSubject = (subject: string) => {
     setSelectedSubjects(prev => 
@@ -2212,12 +2232,19 @@ const PaymentModal = ({
   const handleNext = (e: FormEvent) => {
     e.preventDefault();
     if (studentName && phone) {
+      if (selectedSubjects.length === 0) {
+        setError('Vui lòng chọn ít nhất một môn học');
+        return;
+      }
+      setError(null);
       setStep('qr');
     }
   };
 
   const handleDone = async () => {
+    if (loading) return;
     setLoading(true);
+    setError(null);
     try {
       const path = 'registrations';
       await addDoc(collection(db, path), {
@@ -2225,12 +2252,12 @@ const PaymentModal = ({
         phone,
         subjects: selectedSubjects,
         courseTitle: pkg.title,
-        paymentAmount: pkg.price,
+        paymentAmount: calculatedPrice.display,
         status: 'paid',
         createdAt: serverTimestamp(),
-        parentName: '', // Info not collected in payment modal
-        studentClass: '', // Info not collected in payment modal
-        note: `Thanh toán qua QR: ${pkg.title}`
+        parentName: '', 
+        studentClass: '', 
+        note: `Thanh toán qua QR: ${pkg.title} - Tổng: ${calculatedPrice.display}`
       });
       
       setStep('success');
@@ -2240,9 +2267,21 @@ const PaymentModal = ({
         origin: { y: 0.6 },
         colors: ['#2563eb', '#f59e0b', '#ef4444']
       });
-    } catch (error) {
-      console.error('Error saving payment registration:', error);
-      handleFirestoreError(error, 'create', 'registrations');
+    } catch (err: any) {
+      console.error('Detailed Error saving payment registration:', {
+        message: err.message,
+        code: err.code,
+        stack: err.stack,
+        data: {
+          studentName,
+          phone,
+          subjects: selectedSubjects,
+          courseTitle: pkg.title,
+          paymentAmount: calculatedPrice.display,
+          status: 'paid'
+        }
+      });
+      setError(`Lỗi: ${err.message || 'Không thể gửi thông tin'}. Vui lòng thử lại hoặc liên hệ Hotline.`);
     } finally {
       setLoading(false);
     }
@@ -2263,7 +2302,7 @@ const PaymentModal = ({
 
   if (!isOpen || !pkg) return null;
 
-  const amount = pkg.price.replace(/\D/g, '');
+  const amount = calculatedPrice.numeric.toString();
   const maskedPhone = phone.length >= 3 ? phone.slice(0, -3) + '***' : phone;
   const subjectsInfo = selectedSubjects.length > 0 ? `(${selectedSubjects.join(',')})` : '';
   const qrUrl = `https://img.vietqr.io/image/mbbank-0988771339-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(`Thanh toan ${pkg.title} ${subjectsInfo} ${phone} ${studentName}`)}&accountName=NGUYEN%20VIET%20THOAN`;
@@ -2290,6 +2329,11 @@ const PaymentModal = ({
               <p className="text-gray-500 text-sm mt-2">Vui lòng nhập thông tin để tạo mã QR</p>
             </div>
             <form onSubmit={handleNext} className="space-y-4">
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs font-medium border border-red-100">
+                  {error}
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-500 uppercase">Tên học sinh</label>
                 <input 
@@ -2363,9 +2407,15 @@ const PaymentModal = ({
             <div className="mb-4">
               <h2 className="text-lg font-bold text-brand-dark mb-1">Thanh toán {pkg.title}</h2>
               <div className="bg-brand-bg py-2 px-4 rounded-xl inline-block border-2 border-brand-accent/20">
-                <p className="text-brand-accent font-black text-3xl">{pkg.price}</p>
+                <p className="text-brand-accent font-black text-3xl">{calculatedPrice.display}</p>
               </div>
             </div>
+
+            {error && (
+              <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-xs font-medium border border-red-100">
+                {error}
+              </div>
+            )}
             
             <div className="bg-gray-50 p-4 rounded-2xl mb-4 border-2 border-dashed border-gray-200 relative group">
               <img 
@@ -2407,10 +2457,15 @@ const PaymentModal = ({
             <div className="space-y-3">
               <button 
                 onClick={handleDone}
-                className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
+                disabled={loading}
+                className="w-full bg-brand-cta hover:bg-opacity-90 text-white py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 text-sm disabled:opacity-50"
               >
-                <CheckCircle2 size={18} />
-                TÔI ĐÃ CHUYỂN KHOẢN XONG
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <CheckCircle2 size={18} />
+                )}
+                {loading ? 'ĐANG XỬ LÝ...' : 'TÔI ĐÃ CHUYỂN KHOẢN XONG'}
               </button>
               <button 
                 onClick={onClose}

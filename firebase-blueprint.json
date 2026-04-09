@@ -24,9 +24,11 @@
         "subjects": { "type": "array", "items": { "type": "string" }, "description": "Môn quan tâm" },
         "note": { "type": "string", "description": "Ghi chú thêm" },
         "createdAt": { "type": "string", "format": "date-time", "description": "Thời gian đăng ký" },
-        "status": { "type": "string", "enum": ["new", "contacted", "enrolled"], "description": "Trạng thái xử lý" }
+        "status": { "type": "string", "enum": ["new", "contacted", "enrolled", "paid"], "description": "Trạng thái xử lý" },
+        "courseTitle": { "type": "string", "description": "Tên gói học" },
+        "paymentAmount": { "type": "string", "description": "Số tiền thanh toán" }
       },
-      "required": ["parentName", "phone", "studentName", "studentClass", "createdAt", "status"]
+      "required": ["phone", "studentName", "createdAt", "status"]
     },
     "Testimonial": {
       "title": "Testimonial",

@@ -48,18 +48,27 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Check if timestamp is recent (within 1 minute)
+    function isRecent(time) {
+      return time > request.time - duration.value(1, 'm') &&
+             time <= request.time;
+    }
+
     function hasOnlyAllowedFields(fields) {
       return request.resource.data.keys().hasOnly(fields);
     }
 
     // Validation Functions
     function isValidRegistration(data) {
-      return data.parentName is string && data.parentName.size() > 0 && data.parentName.size() < 100 &&
-             data.phone is string && data.phone.size() >= 9 && data.phone.size() <= 15 &&
-             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
-             data.studentClass is string && data.studentClass.size() > 0 &&
-             data.status in ['new', 'contacted', 'enrolled'] &&
+      return (data.phone is string && data.phone.size() >= 3) &&
+             (data.studentName is string && data.studentName.size() > 0) &&
+             (data.status in ['new', 'contacted', 'enrolled', 'paid']) &&
+             (data.createdAt is timestamp) &&
+             (!('parentName' in data) || data.parentName is string) &&
+             (!('studentClass' in data) || data.studentClass is string) &&
              (!('subjects' in data) || data.subjects is list) &&
+             (!('courseTitle' in data) || data.courseTitle is string) &&
+             (!('paymentAmount' in data) || data.paymentAmount is string) &&
              (!('note' in data) || data.note is string);
     }
 
