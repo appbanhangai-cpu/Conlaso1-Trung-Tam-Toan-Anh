@@ -669,8 +669,8 @@ const WhyChooseUs = () => {
           <div className="relative">
             <div className="rounded-3xl overflow-hidden shadow-xl">
               <img 
-                src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1000" 
-                alt="Lớp học Conlaso1" 
+                src="https://res.cloudinary.com/dukjtusv9/image/upload/v1775736094/Logo_t8v7vj.jpg" 
+                alt="Lý do tin tưởng Conlaso1" 
                 className="w-full h-auto"
                 referrerPolicy="no-referrer"
               />
@@ -2606,6 +2606,14 @@ const ChatAssistant = () => {
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    // Check for iOS non-Safari browsers
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isIOS && !isSafari && !SpeechRecognition) {
+      setError('Trên iOS, vui lòng sử dụng Safari để dùng tính năng giọng nói.');
+    }
+
     if (SpeechRecognition && !recognitionRef.current) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
@@ -2625,16 +2633,20 @@ const ChatAssistant = () => {
       recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         setIsListening(false);
-        if (event.error === 'not-allowed') {
-          setError('Vui lòng cấp quyền Microphone');
+        
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          setError('Vui lòng cấp quyền Microphone trong cài đặt trình duyệt');
         } else if (event.error === 'no-speech') {
-          setError('Không nghe thấy gì...');
+          // Silent fail for no speech to avoid annoying the user
+          console.log('No speech detected');
+        } else if (event.error === 'network') {
+          setError('Lỗi kết nối mạng khi nhận diện giọng nói');
         } else {
-          setError('Lỗi kết nối Mic');
+          setError(`Lỗi Mic: ${event.error}`);
         }
         
-        // Auto-clear error after 3s
-        setTimeout(() => setError(null), 3000);
+        // Auto-clear error after 4s
+        setTimeout(() => setError(null), 4000);
       };
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
@@ -2653,13 +2665,12 @@ const ChatAssistant = () => {
   const toggleListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setError('Trình duyệt không hỗ trợ Mic');
-      setTimeout(() => setError(null), 3000);
+      setError('Trình duyệt không hỗ trợ nhận diện giọng nói');
+      setTimeout(() => setError(null), 4000);
       return;
     }
 
     if (!recognitionRef.current) {
-      // Re-init if lost
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
@@ -2670,8 +2681,8 @@ const ChatAssistant = () => {
       recognition.onend = () => setIsListening(false);
       recognition.onerror = (event: any) => {
         setIsListening(false);
-        setError(event.error === 'not-allowed' ? 'Cần quyền Mic' : 'Lỗi Mic');
-        setTimeout(() => setError(null), 3000);
+        setError(`Lỗi Mic: ${event.error}`);
+        setTimeout(() => setError(null), 4000);
       };
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
@@ -2688,21 +2699,28 @@ const ChatAssistant = () => {
       if (isListeningRef.current) {
         recognitionRef.current.stop();
       } else {
-        // Ensure any previous speech is stopped
-        window.speechSynthesis.cancel();
+        // Stop any current speech synthesis
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
         setIsSpeaking(false);
         
-        recognitionRef.current.start();
+        // Small delay to ensure audio system is ready
+        setTimeout(() => {
+          try {
+            recognitionRef.current.start();
+          } catch (e) {
+            console.error('Start recognition error:', e);
+          }
+        }, 100);
       }
     } catch (error: any) {
       console.error('Mic toggle error:', error);
       if (error.name === 'InvalidStateError' || (error.message && error.message.includes('already started'))) {
-        // Already running, just sync state
         setIsListening(true);
       } else {
         setIsListening(false);
-        recognitionRef.current = null;
-        setError('Không thể bật Mic');
+        setError('Không thể bật Mic. Thử lại sau.');
         setTimeout(() => setError(null), 3000);
       }
     }
@@ -2711,23 +2729,24 @@ const ChatAssistant = () => {
   // Auto-listen logic for Voice Mode
   useEffect(() => {
     let interval: any;
+    // On mobile, auto-start is often blocked. We only try if not on mobile or if user has interacted.
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
     if (isVoiceMode && !isSpeaking && !loading && !isListening) {
       interval = setTimeout(() => {
-        // Double check conditions before starting
         if (isVoiceMode && !isSpeaking && !loading && !isListening) {
           try {
             if (recognitionRef.current) {
+              // On mobile, this might fail silently or throw error
               recognitionRef.current.start();
               setIsListening(true);
-            } else {
-              toggleListening();
             }
           } catch (e) {
-            // If already started or other error, toggleListening will handle it
-            toggleListening();
+            console.log('Auto-start blocked or failed:', e);
+            // Don't show error to user for auto-start failure, they can tap manually
           }
         }
-      }, 1500); // Increased delay for stability
+      }, 1500);
     }
     return () => clearTimeout(interval);
   }, [isVoiceMode, isSpeaking, loading, isListening]);
