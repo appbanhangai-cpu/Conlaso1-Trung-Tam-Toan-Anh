@@ -976,16 +976,16 @@ const Testimonials = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-[2rem] p-6 md:p-8 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="bg-white rounded-[1rem] p-3 w-full max-w-[300px] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <button 
                 onClick={() => setShowForm(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors z-10"
+                className="absolute top-2 right-2 text-gray-400 hover:text-brand-dark transition-colors z-10"
               >
-                <X size={20} />
+                <X size={14} />
               </button>
-              <h3 className="text-xl font-bold text-brand-dark mb-1">Gửi đánh giá của bạn</h3>
-              <p className="text-gray-500 text-xs mb-6">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
+              <h3 className="text-sm font-bold text-brand-dark mb-0.5">Gửi đánh giá của bạn</h3>
+              <p className="text-gray-500 text-[8px] mb-2">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
               
               <TestimonialForm onSuccess={() => setShowForm(false)} />
             </motion.div>
@@ -1068,14 +1068,20 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     if (!formData.content.trim()) return;
     setIsAiProcessing(true);
     try {
-      const { GoogleGenAI } = await import("@google/genai") as any;
-      const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const { GoogleGenAI, ThinkingLevel } = await import("@google/genai") as any;
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
       const prompt = `Bạn là một chuyên gia viết nội dung marketing. Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (Toán, Tiếng Anh, AI) để nó trở nên chuyên nghiệp, truyền cảm hứng và hay hơn, nhưng vẫn giữ đúng ý nghĩa gốc và cảm xúc chân thật. Đánh giá gốc: "${formData.content}". Chỉ trả về nội dung đánh giá đã viết lại, không thêm bất kỳ lời dẫn nào.`;
 
-      const result = await model.generateContent(prompt);
-      const enhanced = result.response.text().trim();
+      const result = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
+        }
+      });
+      
+      const enhanced = result.text?.trim() || '';
       setAiEnhancedContent(enhanced);
     } catch (error) {
       console.error("AI Enhancement Error:", error);
@@ -1086,6 +1092,12 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (!photo) {
+      alert('Tải ảnh chân dung của bạn lên');
+      return;
+    }
+
     setLoading(true);
     try {
       const finalContent = aiEnhancedContent || formData.content;
@@ -1094,14 +1106,20 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       let isApproved = false;
       if (rating >= 4) {
         try {
-          const { GoogleGenAI } = await import("@google/genai") as any;
-          const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const { GoogleGenAI, ThinkingLevel } = await import("@google/genai") as any;
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
           const analysisPrompt = `Phân tích nội dung đánh giá sau đây về trung tâm Conlaso1: "${finalContent}". Nếu nội dung là tích cực, khen ngợi trung tâm hoặc thầy cô, hãy trả về "POSITIVE". Nếu nội dung có ý chê bai, phàn nàn, tiêu cực hoặc không liên quan, hãy trả về "NEGATIVE". Chỉ trả về một từ duy nhất.`;
 
-          const result = await model.generateContent(analysisPrompt);
-          const sentiment = result.response.text().trim().toUpperCase();
+          const result = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: analysisPrompt,
+            config: {
+              thinkingConfig: { thinkingLevel: ThinkingLevel.LOW }
+            }
+          });
+          
+          const sentiment = result.text?.trim().toUpperCase();
           if (sentiment === "POSITIVE") {
             isApproved = true;
           }
@@ -1133,10 +1151,10 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3">
       {/* Photo Section */}
-      <div className="flex flex-col items-center gap-3 mb-4">
-        <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center group">
+      <div className="flex flex-col items-center gap-2 mb-3">
+        <div className={`relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 border-2 border-dashed flex items-center justify-center group transition-colors ${!photo ? 'border-red-300' : 'border-gray-300'}`}>
           {photo ? (
             <img src={photo} alt="Preview" className="w-full h-full object-cover" />
           ) : isCameraOpen ? (
@@ -1196,7 +1214,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      <div className="flex justify-center gap-2 mb-4">
+      <div className="flex justify-center gap-1.5 mb-3">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -1205,7 +1223,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
             className="transition-transform hover:scale-110"
           >
             <Star 
-              size={28} 
+              size={24} 
               fill={star <= rating ? "#FFC107" : "none"} 
               stroke={star <= rating ? "#FFC107" : "#CBD5E1"} 
             />
@@ -1213,24 +1231,24 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1">
-          <label className="text-[10px] font-bold text-gray-400 uppercase">Họ tên</label>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-0.5">
+          <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Họ tên</label>
           <input 
             required 
             type="text" 
             value={formData.name}
             onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm"
+            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-xs"
             placeholder="Nguyễn Văn A"
           />
         </div>
-        <div className="space-y-1">
-          <label className="text-[10px] font-bold text-gray-400 uppercase">Vai trò</label>
+        <div className="space-y-0.5">
+          <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Vai trò</label>
           <select 
             value={formData.role}
             onChange={e => setFormData({...formData, role: e.target.value})}
-            className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-sm appearance-none"
+            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-xs appearance-none"
           >
             <option value="Phụ huynh">Phụ huynh</option>
             <option value="Học sinh">Học sinh</option>
@@ -1238,13 +1256,13 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-[10px] font-bold text-gray-400 uppercase">Nội dung đánh giá & Bình luận</label>
+      <div className="space-y-0.5">
+        <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Nội dung đánh giá & Bình luận</label>
         <textarea 
           required
           value={formData.content}
           onChange={e => setFormData({...formData, content: e.target.value})}
-          className="w-full px-4 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-32 resize-none text-sm"
+          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-20 resize-none text-xs"
           placeholder="Chia sẻ cảm nhận hoặc bình luận của bạn về trung tâm..."
         ></textarea>
         
@@ -1253,10 +1271,10 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
             type="button"
             onClick={enhanceContent}
             disabled={isAiProcessing}
-            className="flex items-center gap-2 text-brand-accent text-[10px] font-bold uppercase hover:underline disabled:opacity-50"
+            className="flex items-center gap-1 text-brand-accent text-[9px] font-bold uppercase hover:underline disabled:opacity-50"
           >
-            {isAiProcessing ? <RefreshCw size={12} className="animate-spin" /> : <Brain size={12} />}
-            {isAiProcessing ? "Đang tối ưu..." : "AI Tối ưu nội dung hay hơn"}
+            {isAiProcessing ? <RefreshCw size={10} className="animate-spin" /> : <Brain size={10} />}
+            {isAiProcessing ? "Đang tối ưu..." : "AI Tối ưu nội dung"}
           </button>
         )}
       </div>
