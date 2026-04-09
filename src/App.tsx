@@ -36,12 +36,14 @@ import {
   Headphones,
   Code,
   MessageSquare,
-  Cpu
+  Cpu,
+  Check
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import * as XLSX from 'xlsx';
 import { GoogleGenAI } from "@google/genai";
+import ReactMarkdown from 'react-markdown';
 import { db, auth, storage } from './firebase';
 import { 
   collection, 
@@ -820,8 +822,8 @@ const Testimonials = () => {
       rating: 5
     },
     {
-      name: "Học sinh lớp 9",
-      text: "Em đã cải thiện được điểm số môn Tiếng Anh đáng kể sau 3 tháng học. Phương pháp dạy ở đây rất khác biệt và hiệu quả.",
+      name: "Học viên lớp Tin học AI",
+      text: "Em đã tự tay xây dựng được website đầu tiên nhờ AI hỗ trợ Code. Phương pháp Vibe Coding thực sự giúp em biến ý tưởng thành hiện thực rất nhanh.",
       avatar: "https://i.pravatar.cc/150?u=5",
       rating: 5
     },
@@ -838,8 +840,8 @@ const Testimonials = () => {
       rating: 5
     },
     {
-      name: "Học sinh lớp 12",
-      text: "Lộ trình ôn thi đại học rất rõ ràng. Em cảm thấy tự tin hơn rất nhiều cho kỳ thi sắp tới.",
+      name: "Học viên lớp Prompt Engineering",
+      text: "Khóa học lập trình ngôn ngữ tự nhiên giúp em tối ưu hóa việc học tập. Giờ đây em biết cách ra lệnh cho AI để tóm tắt bài giảng và giải bài tập cực kỳ hiệu quả.",
       avatar: "https://i.pravatar.cc/150?u=8",
       rating: 5
     },
@@ -2137,6 +2139,7 @@ const PaymentModal = ({
 }) => {
   const [studentName, setStudentName] = useState('');
   const [phone, setPhone] = useState('');
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [step, setStep] = useState<'info' | 'qr' | 'success'>('info');
 
   useEffect(() => {
@@ -2144,8 +2147,17 @@ const PaymentModal = ({
       setStep('info');
       setStudentName('');
       setPhone('');
+      setSelectedSubjects([]);
     }
   }, [isOpen]);
+
+  const toggleSubject = (subject: string) => {
+    setSelectedSubjects(prev => 
+      prev.includes(subject) 
+        ? prev.filter(s => s !== subject) 
+        : [...prev, subject]
+    );
+  };
 
   const handleNext = (e: FormEvent) => {
     e.preventDefault();
@@ -2181,7 +2193,8 @@ const PaymentModal = ({
 
   const amount = pkg.price.replace(/\D/g, '');
   const maskedPhone = phone.length >= 3 ? phone.slice(0, -3) + '***' : phone;
-  const qrUrl = `https://img.vietqr.io/image/mbbank-0988771339-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(`Thanh toan ${pkg.title} ${phone} ${studentName}`)}&accountName=NGUYEN%20VIET%20THOAN`;
+  const subjectsInfo = selectedSubjects.length > 0 ? `(${selectedSubjects.join(',')})` : '';
+  const qrUrl = `https://img.vietqr.io/image/mbbank-0988771339-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(`Thanh toan ${pkg.title} ${subjectsInfo} ${phone} ${studentName}`)}&accountName=NGUYEN%20VIET%20THOAN`;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-sm">
@@ -2227,6 +2240,33 @@ const PaymentModal = ({
                   className="w-full px-5 py-3 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
                 />
               </div>
+
+              <div className="flex justify-between items-center py-2">
+                {[
+                  { id: 'Anh', label: 'Anh' },
+                  { id: 'Toán', label: 'Toán' },
+                  { id: 'AI', label: 'AI' }
+                ].map((sub) => (
+                  <label key={sub.id} className="flex items-center gap-2 cursor-pointer group">
+                    <span className={`text-sm font-bold transition-colors ${selectedSubjects.includes(sub.id) ? 'text-red-500' : 'text-gray-500'}`}>
+                      {sub.label}
+                    </span>
+                    <div 
+                      onClick={() => toggleSubject(sub.id)}
+                      className={`w-10 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                        selectedSubjects.includes(sub.id) 
+                          ? 'border-green-500 bg-green-50' 
+                          : 'border-green-500 bg-white'
+                      }`}
+                    >
+                      {selectedSubjects.includes(sub.id) && (
+                        <Check size={16} className="text-red-500 stroke-[3px]" />
+                      )}
+                    </div>
+                  </label>
+                ))}
+              </div>
+
               <button 
                 type="submit" 
                 className="w-full bg-brand-dark hover:bg-brand-accent text-white py-4 rounded-xl font-bold transition-all shadow-lg mt-4"
@@ -2288,7 +2328,7 @@ const PaymentModal = ({
             <div className="bg-blue-50 p-3 rounded-xl mb-4 text-left border border-blue-100">
               <div className="text-[9px] text-blue-600 font-bold uppercase mb-1">Nội dung chuyển khoản</div>
               <div className="text-xs font-mono break-all text-blue-900 font-bold">
-                Thanh toan {pkg.title} {maskedPhone} {studentName}
+                Thanh toan {pkg.title} {subjectsInfo} {maskedPhone} {studentName}
               </div>
             </div>
 
@@ -2453,8 +2493,19 @@ const ChatAssistant = () => {
   }, [isListening]);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (scrollRef.current && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'ai') {
+        // Scroll to the top of the last AI message so the user can read from the start
+        const messageElements = scrollRef.current.querySelectorAll('.chat-message');
+        const lastElement = messageElements[messageElements.length - 1];
+        if (lastElement) {
+          lastElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // For user messages, scroll to bottom to show their input
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
     }
   }, [messages]);
 
@@ -2588,7 +2639,10 @@ const ChatAssistant = () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Strip emojis/icons for speech
+      const cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}]/gu, '');
+      
+      const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.lang = 'vi-VN';
       
       // Try to find a Vietnamese voice
@@ -2645,7 +2699,14 @@ const ChatAssistant = () => {
              - Lập trình ngôn ngữ tự nhiên: Làm chủ Prompt Engineering, tự động hóa công việc.
              - Xây dựng ứng dụng AI: Tạo app học tập, chatbot, video bài giảng bằng AI.
           
-          Phong cách trả lời: Thân thiện, chuyên nghiệp, nhiệt tình và ngắn gọn.
+          PHONG CÁCH TRÌNH BÀY (QUAN TRỌNG):
+          - Sử dụng Markdown để định dạng câu trả lời đẹp mắt.
+          - Sử dụng các tiêu đề # (H1), ## (H2), ### (H3) rõ ràng.
+          - Sử dụng các icon/emoji (🚀, 🧠, 🗣️, ✅, 📞...) để làm nổi bật các ý chính.
+          - Sử dụng danh sách có dấu gạch đầu dòng hoặc số thứ tự.
+          - In đậm các từ khóa quan trọng.
+          
+          Phong cách trả lời: Thân thiện, chuyên nghiệp, nhiệt tình.
           Nếu khách hàng muốn đăng ký, hãy hướng dẫn họ điền form đăng ký trên website.
           - Với môn Tiếng Anh & Toán: Gọi hotline 0 9 6 1 . 7 7 1 . 3 3 9.
           - Với môn Tin học ứng dụng AI: Gọi hotline 0 9 8 8 . 7 7 1 . 3 3 9.
@@ -2805,13 +2866,15 @@ const ChatAssistant = () => {
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div key={i} className={`flex chat-message ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
                     msg.role === 'user' 
                       ? 'bg-brand-accent text-white rounded-tr-none' 
                       : 'bg-white text-gray-700 shadow-sm border border-gray-100 rounded-tl-none'
                   }`}>
-                    {msg.text}
+                    <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-brand-dark prose-p:leading-relaxed prose-li:my-1">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    </div>
                     {msg.role === 'ai' && (
                       <button 
                         onClick={() => speak(msg.text)} 
