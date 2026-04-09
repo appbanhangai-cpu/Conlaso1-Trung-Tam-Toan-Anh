@@ -1,5 +1,5 @@
 {
   "name": "Conlaso1 - Trung Tâm Tiếng Anh & Toán",
   "description": "Landing page chuyên nghiệp cho Trung tâm Tiếng Anh & Toán Conlaso1 - Đồng hành cùng con chinh phục tương lai.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["microphone"]
 }

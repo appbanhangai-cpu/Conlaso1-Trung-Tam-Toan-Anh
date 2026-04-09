@@ -371,6 +371,7 @@ const Programs = () => {
       desc: "Phát âm chuẩn, tăng từ vựng, củng cố ngữ pháp và rèn luyện 4 kỹ năng Nghe - Nói - Đọc - Viết.",
       icon: <BookOpen className="text-blue-600" />,
       color: "bg-blue-50",
+      borderColor: "border-blue-200",
       details: {
         target: "Xây dựng gốc rễ vững chắc cho học sinh mới bắt đầu hoặc mất gốc.",
         content: [
@@ -387,6 +388,7 @@ const Programs = () => {
       desc: "Phát triển phản xạ giao tiếp, tăng kỹ năng làm bài và chuẩn bị cho các kỳ thi quan trọng.",
       icon: <Star className="text-yellow-600" />,
       color: "bg-yellow-50",
+      borderColor: "border-yellow-200",
       details: {
         target: "Phát triển kỹ năng chuyên sâu cho học sinh đã có nền tảng.",
         content: [
@@ -403,6 +405,7 @@ const Programs = () => {
       desc: "Rèn luyện logic, khả năng phân tích, giúp trẻ học chủ động và không học vẹt.",
       icon: <Brain className="text-purple-600" />,
       color: "bg-purple-50",
+      borderColor: "border-purple-200",
       details: {
         target: "Khơi dậy niềm đam mê và khả năng suy luận logic từ sớm.",
         content: [
@@ -419,6 +422,7 @@ const Programs = () => {
       desc: "Củng cố kiến thức trọng tâm, luyện bài theo chuyên đề và nâng cao kết quả tại trường.",
       icon: <Trophy className="text-orange-600" />,
       color: "bg-orange-50",
+      borderColor: "border-orange-200",
       details: {
         target: "Chinh phục các kỳ thi học sinh giỏi và thi chuyển cấp.",
         content: [
@@ -435,6 +439,7 @@ const Programs = () => {
       desc: "Ứng dụng trí tuệ nhân tạo vào học tập và công việc để tăng hiệu suất vượt trội.",
       icon: <Brain className="text-blue-600" />,
       color: "bg-blue-50",
+      borderColor: "border-blue-300",
       details: {
         target: "Học sinh, sinh viên và người đi làm muốn làm chủ công nghệ.",
         content: [
@@ -451,6 +456,7 @@ const Programs = () => {
       desc: "Biến ý tưởng thành sản phẩm mà không cần giỏi lập trình.",
       icon: <Code className="text-indigo-600" />,
       color: "bg-indigo-50",
+      borderColor: "border-indigo-300",
       details: {
         target: "Người mới bắt đầu, marketer, chủ kinh doanh, học sinh muốn làm sản phẩm thực tế.",
         content: [
@@ -467,6 +473,7 @@ const Programs = () => {
       desc: "Không cần học cú pháp phức tạp, chỉ cần biết cách “ra lệnh thông minh” cho AI.",
       icon: <MessageSquare className="text-cyan-600" />,
       color: "bg-cyan-50",
+      borderColor: "border-cyan-300",
       details: {
         target: "Kỹ năng cốt lõi của thời đại AI – ai cũng cần để tối ưu công việc.",
         content: [
@@ -483,6 +490,7 @@ const Programs = () => {
       desc: "Tự tay tạo các công cụ phục vụ chính bạn cho học tập & công việc.",
       icon: <Cpu className="text-emerald-600" />,
       color: "bg-emerald-50",
+      borderColor: "border-emerald-300",
       details: {
         target: "Học đi đôi với làm – tạo ra sản phẩm thật dùng được ngay.",
         content: [
@@ -507,8 +515,8 @@ const Programs = () => {
           {programs.map((p, i) => (
             <motion.div 
               key={i}
-              whileHover={{ y: -10 }}
-              className={`${p.color} p-8 rounded-3xl transition-all border border-transparent hover:border-brand-accent/20 shadow-sm flex flex-col`}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className={`${p.color} ${p.borderColor} p-8 rounded-3xl transition-all border-2 hover:shadow-xl flex flex-col h-full`}
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md flex-shrink-0">
@@ -2459,9 +2467,11 @@ const ChatAssistant = () => {
       recognition.lang = 'vi-VN';
 
       recognition.onstart = () => {
+        console.log('Speech recognition started');
         setIsListening(true);
       };
       recognition.onend = () => {
+        console.log('Speech recognition ended');
         setIsListening(false);
       };
       recognition.onerror = (event: any) => {
@@ -2470,6 +2480,7 @@ const ChatAssistant = () => {
       };
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
+        console.log('Speech recognition result:', transcript);
         if (isVoiceModeRef.current) {
           handleSendRef.current?.(transcript);
         } else {
@@ -2479,37 +2490,49 @@ const ChatAssistant = () => {
 
       recognitionRef.current = recognition;
     }
-
-    return () => {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch (e) {}
-      }
-    };
   }, []);
 
   const toggleListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Vui lòng sử dụng Chrome hoặc Edge.');
+      return;
+    }
+
     if (!recognitionRef.current) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'vi-VN';
-        recognition.onstart = () => setIsListening(true);
-        recognition.onend = () => setIsListening(false);
-        recognition.onerror = () => setIsListening(false);
-        recognition.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          if (isVoiceModeRef.current) handleSendRef.current?.(transcript);
-          else setInput(transcript);
-        };
-        recognitionRef.current = recognition;
-      } else {
-        alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.');
-        return;
-      }
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'vi-VN';
+      
+      recognition.onstart = () => {
+        console.log('Mic started');
+        setIsListening(true);
+      };
+      
+      recognition.onend = () => {
+        console.log('Mic ended');
+        setIsListening(false);
+      };
+      
+      recognition.onerror = (event: any) => {
+        console.error('Mic error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          alert('Vui lòng cho phép truy cập Microphone trong cài đặt trình duyệt để sử dụng tính năng này.');
+        }
+      };
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        console.log('Mic result:', transcript);
+        if (isVoiceModeRef.current) {
+          handleSendRef.current?.(transcript);
+        } else {
+          setInput(transcript);
+        }
+      };
+      recognitionRef.current = recognition;
     }
 
     try {
@@ -2517,17 +2540,22 @@ const ChatAssistant = () => {
         recognitionRef.current.stop();
         setIsListening(false);
       } else {
+        // Ensure any previous speech is stopped
         window.speechSynthesis.cancel();
         setIsSpeaking(false);
+        
+        // Re-init if needed
         recognitionRef.current.start();
         setIsListening(true);
       }
     } catch (error: any) {
-      console.error('Recognition toggle error:', error);
-      if (error.message && (error.message.includes('already started') || error.name === 'InvalidStateError')) {
+      console.error('Mic toggle error:', error);
+      if (error.name === 'InvalidStateError' || (error.message && error.message.includes('already started'))) {
         setIsListening(true);
       } else {
         setIsListening(false);
+        // Force re-init on next try
+        recognitionRef.current = null;
       }
     }
   };
@@ -2537,10 +2565,21 @@ const ChatAssistant = () => {
     let interval: any;
     if (isVoiceMode && !isSpeaking && !loading && !isListening) {
       interval = setTimeout(() => {
+        // Double check conditions before starting
         if (isVoiceMode && !isSpeaking && !loading && !isListening) {
-          toggleListening();
+          try {
+            if (recognitionRef.current) {
+              recognitionRef.current.start();
+              setIsListening(true);
+            } else {
+              toggleListening();
+            }
+          } catch (e) {
+            // If already started or other error, toggleListening will handle it
+            toggleListening();
+          }
         }
-      }, 1000);
+      }, 1500); // Increased delay for stability
     }
     return () => clearTimeout(interval);
   }, [isVoiceMode, isSpeaking, loading, isListening]);
@@ -2551,11 +2590,20 @@ const ChatAssistant = () => {
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'vi-VN';
+      
+      // Try to find a Vietnamese voice
+      const voices = window.speechSynthesis.getVoices();
+      const viVoice = voices.find(v => v.lang.includes('vi'));
+      if (viVoice) utterance.voice = viVoice;
+
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => {
         setIsSpeaking(false);
       };
-      utterance.onerror = () => setIsSpeaking(false);
+      utterance.onerror = (e) => {
+        console.error('Speech synthesis error:', e);
+        setIsSpeaking(false);
+      };
       
       window.speechSynthesis.speak(utterance);
     }
@@ -2577,9 +2625,16 @@ const ChatAssistant = () => {
 
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      
+      // Build history for context
+      const history = messages.slice(-10).map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
+
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: userMsg,
+        contents: [...history, { role: 'user', parts: [{ text: userMsg }] }],
         config: {
           systemInstruction: `Bạn là trợ lý ảo thông minh của Trung tâm Conlaso1 - Trung tâm đào tạo Tiếng Anh, Toán và Tin học ứng dụng AI.
           Nhiệm vụ của bạn là giải đáp các thắc mắc của phụ huynh và học sinh về:
@@ -2603,12 +2658,16 @@ const ChatAssistant = () => {
 
       const aiText = response.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
       setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
-      speak(aiText);
+      if (isVoiceModeRef.current) {
+        speak(aiText);
+      }
     } catch (error) {
       console.error('AI Error:', error);
       const errorMsg = 'Xin lỗi, tôi không thể kết nối ngay lúc này. Bạn vui lòng liên hệ hotline 0961 771 339 (Anh/Toán) hoặc 0988 771 339 (Tin học AI) nhé!';
       setMessages(prev => [...prev, { role: 'ai', text: errorMsg }]);
-      speak(errorMsg);
+      if (isVoiceModeRef.current) {
+        speak(errorMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -2621,9 +2680,11 @@ const ChatAssistant = () => {
   const startVoiceMode = () => {
     setIsVoiceMode(true);
     setIsOpen(true);
+    // Pre-load voices
+    window.speechSynthesis.getVoices();
     setTimeout(() => {
       speak("Tôi đang nghe đây, bạn hãy nói đi.");
-    }, 500);
+    }, 800);
   };
 
   const closeVoiceMode = () => {
