@@ -27,11 +27,21 @@ import {
   Music,
   Heart,
   AlertCircle,
-  Download
+  Download,
+  Pencil,
+  Mic,
+  Volume2,
+  VolumeX,
+  AudioLines,
+  Headphones,
+  Code,
+  MessageSquare,
+  Cpu
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import * as XLSX from 'xlsx';
+import { GoogleGenAI } from "@google/genai";
 import { db, auth, storage } from './firebase';
 import { 
   collection, 
@@ -211,7 +221,7 @@ const StickyNav = () => {
   ];
 
   return (
-    <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-3">
+    <div className="fixed right-4 top-20 z-[60] hidden lg:flex flex-col gap-3">
       {menuItems.map((item) => (
         <a
           key={item.id}
@@ -249,7 +259,7 @@ const Hero = () => (
         >
           <div className="mb-3">
             <span className="text-white/70 text-[10px] font-medium tracking-[0.2em] uppercase">
-              TRUNG TÂM TIẾNG ANH & TOÁN
+              TRUNG TÂM TIẾNG ANH & TOÁN + ỨNG DỤNG AI VÀO CUỘC SỐNG
             </span>
           </div>
           <h1 className="font-serif leading-[1.1] mb-6">
@@ -418,6 +428,70 @@ const Programs = () => {
           "Rèn luyện kỹ năng trình bày bài làm chặt chẽ và chính xác."
         ],
         benefit: "Tự tin đối đầu với các bài toán khó và đạt kết quả cao trong các kỳ thi chuyên."
+      }
+    },
+    {
+      title: "Tin học ứng dụng AI",
+      desc: "Ứng dụng trí tuệ nhân tạo vào học tập và công việc để tăng hiệu suất vượt trội.",
+      icon: <Brain className="text-blue-600" />,
+      color: "bg-blue-50",
+      details: {
+        target: "Học sinh, sinh viên và người đi làm muốn làm chủ công nghệ.",
+        content: [
+          "Sử dụng các công cụ AI hỗ trợ học tập và nghiên cứu.",
+          "Ứng dụng AI vào công việc văn phòng và sáng tạo nội dung.",
+          "Tư duy giải quyết vấn đề với sự hỗ trợ của trí tuệ nhân tạo.",
+          "Liên hệ tư vấn trực tiếp: 0988 771 339"
+        ],
+        benefit: "Tăng hiệu suất làm việc và học tập lên gấp nhiều lần, đón đầu xu hướng công nghệ."
+      }
+    },
+    {
+      title: "AI hỗ trợ Code (Vibe Coding)",
+      desc: "Biến ý tưởng thành sản phẩm mà không cần giỏi lập trình.",
+      icon: <Code className="text-indigo-600" />,
+      color: "bg-indigo-50",
+      details: {
+        target: "Người mới bắt đầu, marketer, chủ kinh doanh, học sinh muốn làm sản phẩm thực tế.",
+        content: [
+          "Viết code tự động từ mô tả ý tưởng bằng ngôn ngữ tự nhiên.",
+          "Debug, tối ưu và nâng cấp hệ thống nhanh chóng với AI.",
+          "Tạo website, tool, phần mềm chỉ trong vài giờ.",
+          "Lộ trình: Làm quen AI Code -> Xây dựng logic -> Hoàn thiện sản phẩm."
+        ],
+        benefit: "Biến ý tưởng thành sản phẩm thực tế mà không cần kiến thức lập trình chuyên sâu."
+      }
+    },
+    {
+      title: "Lập trình ngôn ngữ tự nhiên",
+      desc: "Không cần học cú pháp phức tạp, chỉ cần biết cách “ra lệnh thông minh” cho AI.",
+      icon: <MessageSquare className="text-cyan-600" />,
+      color: "bg-cyan-50",
+      details: {
+        target: "Kỹ năng cốt lõi của thời đại AI – ai cũng cần để tối ưu công việc.",
+        content: [
+          "Cách viết prompt hiệu quả để AI hiểu đúng yêu cầu (Prompt Engineering).",
+          "Tự động hóa công việc bằng câu lệnh đời thường.",
+          "Xây dựng hệ thống AI cá nhân hỗ trợ học tập & công việc.",
+          "Lộ trình: Tư duy Prompt -> Kỹ thuật nâng cao -> Tự động hóa quy trình."
+        ],
+        benefit: "Làm chủ kỹ năng Prompt Engineering để làm việc hiệu quả hơn với AI."
+      }
+    },
+    {
+      title: "Xây dựng ứng dụng AI",
+      desc: "Tự tay tạo các công cụ phục vụ chính bạn cho học tập & công việc.",
+      icon: <Cpu className="text-emerald-600" />,
+      color: "bg-emerald-50",
+      details: {
+        target: "Học đi đôi với làm – tạo ra sản phẩm thật dùng được ngay.",
+        content: [
+          "App học tập thông minh (tóm tắt bài, tạo flashcard, luyện thi).",
+          "Công cụ làm việc (viết content, phân tích dữ liệu, chatbot).",
+          "Tạo video tái hiện bài học từ sách bằng AI.",
+          "Lộ trình: Phân tích nhu cầu -> Thiết kế ứng dụng -> Triển khai thực tế."
+        ],
+        benefit: "Tạo ra các sản phẩm AI thực tế phục vụ trực tiếp cho nhu cầu cá nhân."
       }
     }
   ];
@@ -848,23 +922,6 @@ const Testimonials = () => {
           </div>
         )}
       </AnimatePresence>
-
-      {/* Floating Contact Button */}
-      <motion.a
-        href="tel:0961771339"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.1 }}
-        className="fixed bottom-6 right-6 z-[90] bg-white p-2 rounded-[2rem] shadow-2xl hidden md:flex items-center justify-center group border border-gray-100"
-      >
-        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center relative">
-          <div className="w-10 h-10 bg-red-500 rounded-full animate-pulse" />
-          <Phone size={20} className="absolute text-white" fill="currentColor" />
-        </div>
-        <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:px-4 transition-all duration-500 text-brand-dark font-bold whitespace-nowrap">
-          Gọi ngay: 0961.771.339
-        </span>
-      </motion.a>
     </section>
   );
 };
@@ -1367,6 +1424,16 @@ const RegistrationForm = () => {
                       />
                       <span className="text-sm font-medium text-gray-700">Toán</span>
                     </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={formData.subjects.includes('Tin học ứng dụng AI')}
+                        onChange={() => toggleSubject('Tin học ứng dụng AI')}
+                        className="w-5 h-5 rounded border-gray-300 text-brand-accent focus:ring-brand-accent" 
+                      />
+                      <span className="text-sm font-medium text-gray-700">Tin học ứng dụng AI</span>
+                    </label>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -1453,7 +1520,7 @@ const Location = () => (
       </div>
       <div className="max-w-5xl mx-auto rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-brand-bg relative group">
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0425379475673!2d105.85203917430619!3d21.03098388770399!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc03b32172d%3A0xe34ede870aed8c6a!2zMTZBIFAuIEzDvSBUaMOhaSBU4buVLCBMw70gVGjDoWkgVOG7lSwgSG_DoG4gS2nhur9tLCBIw6AgTuG7mWkgMTAwMDAwLCBWaWV0bmFt!5e0!3m2!1sen!2s!4v1775490211345!5m2!1sen!2s" 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2826.974999509655!2d105.85203917377719!3d21.030983887705098!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc03b32172d%3A0xe34ede870aed8c6a!2zMTZBIFAuIEzDvSBUaMOhaSBU4buVLCBMw70gVGjDoWkgVOG7lSwgSG_DoG4gS2nhur9tLCBIw6AgTuG7mWkgMTAwMDAwLCBWaWV0bmFt!5e1!3m2!1sen!2s!4v1775639518847!5m2!1sen!2s" 
           width="100%" 
           height="400" 
           style={{ border: 0 }} 
@@ -1473,7 +1540,7 @@ const Location = () => (
             16A Lý Thái Tổ, Lý Thái Tổ, Hoàn Kiếm, Hà Nội 100000, Vietnam
           </p>
           <a 
-            href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619" 
+            href="https://www.google.com/maps/dir/?api=1&destination=21.030983887705098,105.85203917377719" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-brand-accent font-bold text-xs hover:gap-3 transition-all"
@@ -1499,6 +1566,10 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
   const [selectedRegForStudent, setSelectedRegForStudent] = useState<any>(null);
+  const [selectedRegToEdit, setSelectedRegToEdit] = useState<Registration | null>(null);
+  const [isEditRegModalOpen, setIsEditRegModalOpen] = useState(false);
+  const [selectedStudentToEdit, setSelectedStudentToEdit] = useState<Student | null>(null);
+  const [isEditStudentModalOpen, setIsEditStudentModalOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -1570,7 +1641,6 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   };
 
   const deleteDocItem = async (col: string, id: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa mục này?')) return;
     try {
       await deleteDoc(doc(db, col, id));
     } catch (error) {
@@ -1806,9 +1876,21 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => deleteDocItem('registrations', reg.id)} className="text-gray-400 hover:text-red-600 transition-colors">
-                          <Trash2 size={18} />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            onClick={() => {
+                              setSelectedRegToEdit(reg);
+                              setIsEditRegModalOpen(true);
+                            }}
+                            className="text-gray-400 hover:text-brand-accent transition-colors"
+                            title="Sửa thông tin"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button onClick={() => deleteDocItem('registrations', reg.id)} className="text-gray-400 hover:text-red-600 transition-colors">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )) : (
@@ -1837,12 +1919,25 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {students.length > 0 ? students.map((s) => (
                 <div key={s.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 relative group">
-                  <button 
-                    onClick={() => deleteDocItem('students', s.id)}
-                    className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button 
+                      onClick={() => {
+                        setSelectedStudentToEdit(s);
+                        setIsEditStudentModalOpen(true);
+                      }}
+                      className="text-gray-300 hover:text-brand-accent"
+                      title="Sửa thông tin"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button 
+                      onClick={() => deleteDocItem('students', s.id)}
+                      className="text-gray-300 hover:text-red-500"
+                      title="Xóa"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0">
                       {s.photoUrl ? (
@@ -1932,6 +2027,25 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
             setSelectedRegForStudent(null);
           }}
           initialData={selectedRegForStudent}
+        />
+
+        <AddStudentModal 
+          isOpen={isEditStudentModalOpen} 
+          onClose={() => {
+            setIsEditStudentModalOpen(false);
+            setSelectedStudentToEdit(null);
+          }} 
+          initialData={selectedStudentToEdit}
+          mode="edit"
+        />
+
+        <EditRegistrationModal 
+          isOpen={isEditRegModalOpen}
+          onClose={() => {
+            setIsEditRegModalOpen(false);
+            setSelectedRegToEdit(null);
+          }}
+          registration={selectedRegToEdit}
         />
       </div>
     </div>
@@ -2224,24 +2338,514 @@ const PaymentModal = ({
   );
 };
 
-const StickyMobileCTA = () => {
+const VoiceVisualizer = ({ isActive }: { isActive: boolean }) => {
+  const [volumes, setVolumes] = useState<number[]>([10, 10, 10, 10, 10, 10, 10, 10, 10]);
+  const audioContextRef = React.useRef<AudioContext | null>(null);
+  const analyserRef = React.useRef<AnalyserNode | null>(null);
+  const streamRef = React.useRef<MediaStream | null>(null);
+  const animationRef = React.useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isActive) {
+      const startAudio = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          streamRef.current = stream;
+          
+          const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+          const audioContext = new AudioContextClass();
+          audioContextRef.current = audioContext;
+          
+          const analyser = audioContext.createAnalyser();
+          analyser.fftSize = 32;
+          analyserRef.current = analyser;
+          
+          const source = audioContext.createMediaStreamSource(stream);
+          source.connect(analyser);
+          
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          
+          const update = () => {
+            analyser.getByteFrequencyData(dataArray);
+            // Get a few samples for the bars
+            const newVolumes = Array.from(dataArray.slice(0, 9)).map(v => Math.max(10, v / 4));
+            setVolumes(newVolumes);
+            animationRef.current = requestAnimationFrame(update);
+          };
+          
+          update();
+        } catch (err) {
+          console.error("Error accessing microphone:", err);
+        }
+      };
+      
+      startAudio();
+    } else {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
+      if (audioContextRef.current) audioContextRef.current.close();
+      setVolumes([10, 10, 10, 10, 10, 10, 10, 10, 10]);
+    }
+    
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
+      if (audioContextRef.current) audioContextRef.current.close();
+    };
+  }, [isActive]);
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[60] md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 p-3 flex items-center justify-between shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-      <a 
-        href="tel:0961771339" 
-        className="flex items-center gap-2 text-brand-dark font-bold text-sm px-3"
-      >
-        <div className="w-10 h-10 bg-brand-bg rounded-full flex items-center justify-center text-brand-accent">
-          <Phone size={20} fill="currentColor" className="text-brand-accent" />
-        </div>
-        <span>0961 771 339</span>
-      </a>
-      <a 
-        href="#register" 
-        className="bg-brand-cta text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand-cta/20"
-      >
-        Đăng ký tư vấn
-      </a>
+    <div className="flex items-center gap-1.5 h-16 mb-12">
+      {volumes.map((vol, i) => (
+        <motion.div
+          key={i}
+          animate={{ 
+            height: isActive ? vol : 6,
+            opacity: isActive ? 1 : 0.3
+          }}
+          transition={{ 
+            type: "spring",
+            stiffness: 300,
+            damping: 20
+          }}
+          className={`w-1.5 rounded-full transition-colors duration-300 ${isActive ? 'bg-red-400' : 'bg-brand-accent'}`}
+        />
+      ))}
+    </div>
+  );
+};
+
+const ChatAssistant = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [messages, setMessages] = useState<{ role: 'user' | 'ai', text: string }[]>([
+    { role: 'ai', text: 'Xin chào! Tôi là trợ lý ảo của Conlaso1. Tôi có thể giúp gì cho bạn về các khóa học Tiếng Anh, Toán và Tin học ứng dụng AI?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const recognitionRef = React.useRef<any>(null);
+  const isVoiceModeRef = React.useRef(isVoiceMode);
+  const isSpeakingRef = React.useRef(false);
+  const isListeningRef = React.useRef(false);
+  const handleSendRef = React.useRef<any>(null);
+
+  useEffect(() => {
+    isVoiceModeRef.current = isVoiceMode;
+  }, [isVoiceMode]);
+
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
+
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition && !recognitionRef.current) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'vi-VN';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (isVoiceModeRef.current) {
+          handleSendRef.current?.(transcript);
+        } else {
+          setInput(transcript);
+        }
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'vi-VN';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onerror = () => setIsListening(false);
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          if (isVoiceModeRef.current) handleSendRef.current?.(transcript);
+          else setInput(transcript);
+        };
+        recognitionRef.current = recognition;
+      } else {
+        alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.');
+        return;
+      }
+    }
+
+    try {
+      if (isListeningRef.current) {
+        recognitionRef.current.stop();
+        setIsListening(false);
+      } else {
+        window.speechSynthesis.cancel();
+        setIsSpeaking(false);
+        recognitionRef.current.start();
+        setIsListening(true);
+      }
+    } catch (error: any) {
+      console.error('Recognition toggle error:', error);
+      if (error.message && (error.message.includes('already started') || error.name === 'InvalidStateError')) {
+        setIsListening(true);
+      } else {
+        setIsListening(false);
+      }
+    }
+  };
+
+  // Auto-listen logic for Voice Mode
+  useEffect(() => {
+    let interval: any;
+    if (isVoiceMode && !isSpeaking && !loading && !isListening) {
+      interval = setTimeout(() => {
+        if (isVoiceMode && !isSpeaking && !loading && !isListening) {
+          toggleListening();
+        }
+      }, 1000);
+    }
+    return () => clearTimeout(interval);
+  }, [isVoiceMode, isSpeaking, loading, isListening]);
+
+  const speak = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'vi-VN';
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+      utterance.onerror = () => setIsSpeaking(false);
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const stopSpeaking = () => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+  };
+
+  const handleSend = async (overrideInput?: string) => {
+    const textToSend = overrideInput || input;
+    if (!textToSend.trim() || loading) return;
+
+    const userMsg = textToSend.trim();
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setLoading(true);
+
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: userMsg,
+        config: {
+          systemInstruction: `Bạn là trợ lý ảo thông minh của Trung tâm Conlaso1 - Trung tâm đào tạo Tiếng Anh, Toán và Tin học ứng dụng AI.
+          Nhiệm vụ của bạn là giải đáp các thắc mắc của phụ huynh và học sinh về:
+          1. Khóa học Tiếng Anh: Nền tảng, giao tiếp, luyện thi.
+          2. Khóa học Toán: Toán tư duy, Toán nâng cao cho các cấp.
+          3. Khóa học Tin học ứng dụng AI (Hotline: 0 9 8 8 . 7 7 1 . 3 3 9):
+             - AI hỗ trợ Code (Vibe Coding): Viết code, tạo website/app bằng AI không cần giỏi lập trình.
+             - Lập trình ngôn ngữ tự nhiên: Làm chủ Prompt Engineering, tự động hóa công việc.
+             - Xây dựng ứng dụng AI: Tạo app học tập, chatbot, video bài giảng bằng AI.
+          
+          Phong cách trả lời: Thân thiện, chuyên nghiệp, nhiệt tình và ngắn gọn.
+          Nếu khách hàng muốn đăng ký, hãy hướng dẫn họ điền form đăng ký trên website.
+          - Với môn Tiếng Anh & Toán: Gọi hotline 0 9 6 1 . 7 7 1 . 3 3 9.
+          - Với môn Tin học ứng dụng AI: Gọi hotline 0 9 8 8 . 7 7 1 . 3 3 9.
+          
+          LƯU Ý QUAN TRỌNG: Khi đọc số điện thoại, bạn PHẢI viết tách rời từng chữ số (ví dụ: 0 9 8 8 . 7 7 1 . 3 3 9) để hệ thống đọc chậm và rõ ràng từng số một cho phụ huynh dễ nghe.
+          
+          Địa chỉ trung tâm: 16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội.`
+        }
+      });
+
+      const aiText = response.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
+      setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
+      speak(aiText);
+    } catch (error) {
+      console.error('AI Error:', error);
+      const errorMsg = 'Xin lỗi, tôi không thể kết nối ngay lúc này. Bạn vui lòng liên hệ hotline 0961 771 339 (Anh/Toán) hoặc 0988 771 339 (Tin học AI) nhé!';
+      setMessages(prev => [...prev, { role: 'ai', text: errorMsg }]);
+      speak(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleSendRef.current = handleSend;
+  }, [handleSend]);
+
+  const startVoiceMode = () => {
+    setIsVoiceMode(true);
+    setIsOpen(true);
+    setTimeout(() => {
+      speak("Tôi đang nghe đây, bạn hãy nói đi.");
+    }, 500);
+  };
+
+  const closeVoiceMode = () => {
+    setIsVoiceMode(false);
+    stopSpeaking();
+    recognitionRef.current?.stop();
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[100]">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-80 md:w-96 mb-4 overflow-hidden flex flex-col h-[500px] relative"
+          >
+            {/* Voice Mode Overlay */}
+            <AnimatePresence>
+              {isVoiceMode && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-50 bg-brand-dark flex flex-col items-center justify-center p-8 text-center"
+                >
+                  <button 
+                    onClick={closeVoiceMode}
+                    className="absolute top-4 right-4 text-white/50 hover:text-white p-2 transition-colors"
+                  >
+                    <X size={24} />
+                  </button>
+
+                  <div className="mb-12">
+                    <div className="w-24 h-24 bg-brand-accent/20 rounded-full flex items-center justify-center mb-6 relative">
+                      <motion.div
+                        animate={{ 
+                          scale: isSpeaking || isListening || loading ? [1, 1.3, 1] : 1,
+                          opacity: isSpeaking || isListening || loading ? [0.3, 0.6, 0.3] : 0.2
+                        }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        className="absolute inset-0 bg-brand-accent rounded-full"
+                      />
+                      <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 ${isListening ? 'bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-brand-accent'}`}>
+                        {isListening ? <Mic size={32} className="text-white" /> : <Brain size={32} className="text-white" />}
+                      </div>
+                    </div>
+                    <h3 className="text-white font-bold text-xl mb-2">Chế độ thoại</h3>
+                    <div className="flex flex-col items-center gap-1">
+                      <p className={`font-bold transition-all duration-300 ${isListening ? 'text-red-400 scale-110' : 'text-brand-accent'}`}>
+                        {isListening ? "Đang nghe bạn nói..." : isSpeaking ? "Đang trả lời..." : loading ? "Đang suy nghĩ..." : "Sẵn sàng nghe"}
+                      </p>
+                      {isListening && (
+                        <span className="text-[10px] text-gray-400 animate-pulse">Hãy nói câu hỏi của bạn</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Waveform Animation */}
+                  <VoiceVisualizer isActive={isListening || isSpeaking} />
+
+                  <div className="flex gap-6">
+                    <button 
+                      onClick={toggleListening}
+                      className={`w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-2xl ${isListening ? 'bg-red-500 text-white scale-110 ring-4 ring-red-500/20' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                    >
+                      <Mic size={32} className={isListening ? 'animate-pulse' : ''} />
+                      <span className="text-[10px] mt-1 font-bold">{isListening ? "Đang bật" : "Bật Mic"}</span>
+                    </button>
+                    <button 
+                      onClick={stopSpeaking}
+                      className="w-20 h-20 rounded-full bg-white/10 text-white flex flex-col items-center justify-center hover:bg-white/20 transition-all shadow-2xl"
+                    >
+                      <VolumeX size={32} />
+                      <span className="text-[10px] mt-1 font-bold">Dừng nói</span>
+                    </button>
+                  </div>
+                  
+                  <button 
+                    onClick={() => setIsVoiceMode(false)}
+                    className="mt-12 text-white/50 hover:text-white text-sm font-medium underline underline-offset-4"
+                  >
+                    Chuyển sang chat văn bản
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="bg-brand-dark p-4 text-white flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-brand-accent rounded-full flex items-center justify-center">
+                  <Brain size={18} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm">Trợ lý Conlaso1 AI</h3>
+                  <p className="text-[10px] text-gray-300">Đang trực tuyến</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setIsVoiceMode(true)}
+                  className="p-1 hover:bg-white/10 rounded-lg text-brand-accent"
+                  title="Chế độ thoại"
+                >
+                  <AudioLines size={18} />
+                </button>
+                {isSpeaking && (
+                  <button onClick={stopSpeaking} className="p-1 hover:bg-white/10 rounded-lg text-brand-accent animate-pulse">
+                    <Volume2 size={18} />
+                  </button>
+                )}
+                <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded-lg transition-all">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                    msg.role === 'user' 
+                      ? 'bg-brand-accent text-white rounded-tr-none' 
+                      : 'bg-white text-gray-700 shadow-sm border border-gray-100 rounded-tl-none'
+                  }`}>
+                    {msg.text}
+                    {msg.role === 'ai' && (
+                      <button 
+                        onClick={() => speak(msg.text)} 
+                        className="ml-2 inline-block text-gray-400 hover:text-brand-accent transition-colors"
+                        title="Nghe lại"
+                      >
+                        <Volume2 size={12} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                      <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 bg-white border-t border-gray-100 flex flex-col gap-3">
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyPress={e => e.key === 'Enter' && handleSend()}
+                  placeholder={isListening ? "Đang nghe..." : "Nhập câu hỏi của bạn..."}
+                  className={`flex-1 bg-gray-100 border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all ${isListening ? 'ring-2 ring-red-400 bg-red-50' : ''}`}
+                />
+                <button 
+                  onClick={toggleListening}
+                  className={`p-2 rounded-xl transition-all ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                  title={isListening ? "Dừng nghe" : "Hỏi bằng giọng nói"}
+                >
+                  <Mic size={20} />
+                </button>
+                <button 
+                  onClick={() => handleSend()}
+                  disabled={loading || !input.trim()}
+                  className="bg-brand-accent text-white p-2 rounded-xl hover:bg-brand-dark transition-all disabled:opacity-50"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              </div>
+              <div className="text-[10px] text-center text-gray-400 italic">
+                Bấm vào mic để nói hoặc nhập văn bản
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex flex-col gap-3 items-end">
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.button
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={startVoiceMode}
+              className="bg-red-500 text-white w-11 h-11 rounded-full shadow-xl flex items-center justify-center relative group"
+              title="Dùng Chế độ thoại"
+            >
+              <AudioLines size={22} />
+              <div className="absolute right-full mr-4 bg-red-500 text-white text-xs font-bold py-2 px-4 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none hidden md:block">
+                Dùng Chế độ thoại
+              </div>
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(!isOpen)}
+          className="bg-brand-accent text-white w-11 h-11 rounded-full shadow-xl flex items-center justify-center relative group"
+        >
+          <MessageCircle size={22} className={isOpen ? 'hidden' : 'block'} />
+          <X size={22} className={isOpen ? 'block' : 'hidden'} />
+          {!isOpen && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+          )}
+          <div className="absolute right-full mr-4 bg-brand-dark text-white text-xs font-bold py-2 px-4 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none hidden md:block">
+            Hỏi đáp AI Conlaso1
+          </div>
+        </motion.button>
+      </div>
     </div>
   );
 };
@@ -2440,7 +3044,7 @@ export default function App() {
             pkg={selectedPackage}
           />
 
-          <StickyMobileCTA />
+          <ChatAssistant />
         </>
       ) : (
         user ? <Dashboard user={user} onLogout={handleLogout} /> : <div className="min-h-screen flex items-center justify-center bg-gray-50"><div className="animate-spin w-8 h-8 border-4 border-brand-accent border-t-transparent rounded-full"></div></div>
@@ -2450,7 +3054,163 @@ export default function App() {
   );
 }
 
-const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, onClose: () => void, initialData?: any }) => {
+const EditRegistrationModal = ({ isOpen, onClose, registration }: { isOpen: boolean, onClose: () => void, registration: Registration | null }) => {
+  const [formData, setFormData] = useState({
+    parentName: '',
+    phone: '',
+    studentName: '',
+    studentClass: '',
+    subjects: [] as string[],
+    note: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (registration) {
+      setFormData({
+        parentName: registration.parentName || '',
+        phone: registration.phone || '',
+        studentName: registration.studentName || '',
+        studentClass: registration.studentClass || '',
+        subjects: registration.subjects || [],
+        note: registration.note || ''
+      });
+    }
+    setError(null);
+  }, [registration, isOpen]);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!registration) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      await updateDoc(doc(db, 'registrations', registration.id), {
+        ...formData,
+        updatedAt: serverTimestamp()
+      });
+      onClose();
+    } catch (err: any) {
+      console.error('Error updating registration:', err);
+      setError(err.message || 'Có lỗi xảy ra khi cập nhật thông tin.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen || !registration) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 bg-brand-dark/80 backdrop-blur-sm overflow-y-auto">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-white rounded-[2rem] p-6 w-full max-w-lg shadow-2xl relative"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors">
+          <X size={20} />
+        </button>
+        <h2 className="text-xl font-bold text-brand-dark mb-6">Sửa thông tin đăng ký</h2>
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-red-600 text-sm">
+            <AlertCircle size={18} />
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Tên học sinh</label>
+              <input 
+                required
+                type="text" 
+                value={formData.studentName}
+                onChange={e => setFormData({...formData, studentName: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Lớp</label>
+              <input 
+                required
+                type="text" 
+                value={formData.studentClass}
+                onChange={e => setFormData({...formData, studentClass: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Tên phụ huynh</label>
+              <input 
+                required
+                type="text" 
+                value={formData.parentName}
+                onChange={e => setFormData({...formData, parentName: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-500 uppercase">Số điện thoại</label>
+              <input 
+                required
+                type="tel" 
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase">Môn học quan tâm</label>
+            <div className="flex flex-wrap gap-2">
+              {['Toán', 'Tiếng Anh', 'Tiếng Việt', 'Kỹ năng', 'Tin học ứng dụng AI'].map(sub => (
+                <button
+                  key={sub}
+                  type="button"
+                  onClick={() => {
+                    const subs = formData.subjects.includes(sub) 
+                      ? formData.subjects.filter(s => s !== sub)
+                      : [...formData.subjects, sub];
+                    setFormData({...formData, subjects: subs});
+                  }}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${formData.subjects.includes(sub) ? 'bg-brand-accent text-white' : 'bg-gray-100 text-gray-500'}`}
+                >
+                  {sub}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-500 uppercase">Ghi chú</label>
+            <textarea 
+              value={formData.note}
+              onChange={e => setFormData({...formData, note: e.target.value})}
+              className="w-full px-4 py-2 rounded-xl border-2 border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-24 resize-none"
+            />
+          </div>
+
+          <button 
+            disabled={loading}
+            type="submit" 
+            className="w-full bg-brand-dark hover:bg-brand-accent text-white py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+            ) : 'CẬP NHẬT THÔNG TIN'}
+          </button>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
+const AddStudentModal = ({ isOpen, onClose, initialData, mode = 'add' }: { isOpen: boolean, onClose: () => void, initialData?: any, mode?: 'add' | 'edit' }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -2467,22 +3227,35 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
-        name: initialData.studentName || '',
-        phone: initialData.phone || '',
-        school: '',
-        address: '',
-        class: initialData.studentClass || '',
-        subjects: initialData.subjects || []
-      });
+      if (mode === 'edit') {
+        setFormData({
+          name: initialData.name || '',
+          phone: initialData.phone || '',
+          school: initialData.school || '',
+          address: initialData.address || '',
+          class: initialData.class || '',
+          subjects: initialData.subjects || []
+        });
+        setPreview(initialData.photoUrl || null);
+      } else {
+        setFormData({
+          name: initialData.studentName || '',
+          phone: initialData.phone || '',
+          school: '',
+          address: '',
+          class: initialData.studentClass || '',
+          subjects: initialData.subjects || []
+        });
+        setPreview(null);
+      }
     } else {
       setFormData({ name: '', phone: '', school: '', address: '', class: '', subjects: [] });
+      setPreview(null);
     }
     setImage(null);
-    setPreview(null);
     setError(null);
     setStatus(null);
-  }, [initialData, isOpen]);
+  }, [initialData, isOpen, mode]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -2497,28 +3270,25 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
     setLoading(true);
     setError(null);
     setStatus('Đang khởi tạo...');
-    console.log('Starting student save process...');
+    console.log(`Starting student ${mode} process...`);
     
     // Safety timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       setLoading(false);
       setStatus(null);
       setError('Thao tác quá lâu. Vui lòng kiểm tra kết nối mạng và thử lại.');
-      console.error('Save process timed out after 60s');
+      console.error(`${mode} process timed out after 60s`);
     }, 60000);
 
     try {
       if (!auth.currentUser) {
         throw new Error('Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn.');
       }
-      console.log('User authenticated:', auth.currentUser.email);
 
-      let photoUrl = '';
+      let photoUrl = preview || '';
       if (image) {
         setStatus('Đang tải ảnh lên...');
-        console.log('Uploading image:', image.name);
         
-        // Create a promise that rejects after 15 seconds for the image upload
         const imageUploadPromise = (async () => {
           try {
             const imageRef = ref(storage, `students/${Date.now()}_${image.name}`);
@@ -2526,7 +3296,7 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
             return await getDownloadURL(imageRef);
           } catch (err) {
             console.error('Image upload error:', err);
-            return '';
+            return photoUrl;
           }
         })();
 
@@ -2536,37 +3306,42 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
 
         try {
           photoUrl = await Promise.race([imageUploadPromise, timeoutPromise]);
-          console.log('Image uploaded successfully:', photoUrl);
         } catch (imgErr) {
-          console.warn('Image upload failed or timed out, continuing without photo:', imgErr);
-          // Continue without photo
+          console.warn('Image upload failed or timed out, continuing with existing/no photo:', imgErr);
         }
       }
 
       setStatus('Đang lưu dữ liệu...');
-      console.log('Saving student data to Firestore...');
       
       const studentData = {
         ...formData,
         photoUrl,
-        createdAt: serverTimestamp()
+        updatedAt: serverTimestamp()
       };
 
-      await addDoc(collection(db, 'students'), studentData);
-      console.log('Student data saved successfully');
+      if (mode === 'edit' && initialData?.id) {
+        await updateDoc(doc(db, 'students', initialData.id), studentData);
+      } else {
+        await addDoc(collection(db, 'students'), {
+          ...studentData,
+          createdAt: serverTimestamp()
+        });
+      }
       
       clearTimeout(timeoutId);
       setLoading(false);
       setStatus(null);
       onClose();
-      setFormData({ name: '', phone: '', school: '', address: '', class: '', subjects: [] });
-      setImage(null);
-      setPreview(null);
+      if (mode === 'add') {
+        setFormData({ name: '', phone: '', school: '', address: '', class: '', subjects: [] });
+        setImage(null);
+        setPreview(null);
+      }
     } catch (err: any) {
       clearTimeout(timeoutId);
       setLoading(false);
       setStatus(null);
-      console.error('Error in handleSubmit:', err);
+      console.error(`Error in ${mode} handleSubmit:`, err);
       
       let message = 'Có lỗi xảy ra khi lưu thông tin.';
       if (err.message?.includes('permission-denied') || err.code === 'permission-denied') {
@@ -2590,7 +3365,9 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors">
           <X size={20} />
         </button>
-        <h2 className="text-lg font-bold text-brand-dark mb-4">Thêm học sinh chính thức</h2>
+        <h2 className="text-lg font-bold text-brand-dark mb-4">
+          {mode === 'edit' ? 'Sửa thông tin học sinh' : 'Thêm học sinh chính thức'}
+        </h2>
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-red-600 text-xs">
@@ -2675,7 +3452,7 @@ const AddStudentModal = ({ isOpen, onClose, initialData }: { isOpen: boolean, on
           <div className="md:col-span-2 space-y-1">
             <label className="text-[10px] font-bold text-gray-500 uppercase">Môn học</label>
             <div className="flex flex-wrap gap-1.5">
-              {['Toán', 'Tiếng Anh', 'Tiếng Việt', 'Kỹ năng'].map(sub => (
+              {['Toán', 'Tiếng Anh', 'Tiếng Việt', 'Kỹ năng', 'Tin học ứng dụng AI'].map(sub => (
                 <button
                   key={sub}
                   type="button"
