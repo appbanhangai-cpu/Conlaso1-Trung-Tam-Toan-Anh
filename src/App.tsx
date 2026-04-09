@@ -1008,6 +1008,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [aiEnhancedContent, setAiEnhancedContent] = useState('');
   const [isAiProcessing, setIsAiProcessing] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -1048,6 +1049,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/jpeg');
         setPhoto(dataUrl);
+        setFormError(null);
         stopCamera();
       }
     }
@@ -1059,6 +1061,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhoto(reader.result as string);
+        setFormError(null);
       };
       reader.readAsDataURL(file);
     }
@@ -1092,9 +1095,10 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     
     if (!photo) {
-      alert('Tải ảnh chân dung của bạn lên');
+      setFormError('Tải ảnh chân dung của bạn lên');
       return;
     }
 
@@ -1230,6 +1234,16 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </button>
         ))}
       </div>
+
+      {formError && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-50 text-red-600 text-[10px] font-bold py-2 px-3 rounded-lg text-center mb-3 border border-red-100"
+        >
+          {formError}
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-0.5">
