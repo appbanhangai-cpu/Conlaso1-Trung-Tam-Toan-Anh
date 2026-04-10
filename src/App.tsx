@@ -47,7 +47,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import ReactMarkdown from 'react-markdown';
-import { ai, GEN_MODEL } from './lib/gemini';
+import { getAI, GEN_MODEL } from './lib/gemini';
 import { db, auth, storage } from './firebase';
 import { 
   collection, 
@@ -1191,7 +1191,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       
       Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn, giải thích hay ký tự đặc biệt nào khác.`;
 
-      const response = await ai.models.generateContent({
+      const response = await getAI().models.generateContent({
         model: GEN_MODEL,
         contents: prompt
       });
@@ -1231,7 +1231,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         try {
           const analysisPrompt = `Phân tích nội dung đánh giá sau đây về trung tâm Conlaso1: "${finalContent}". Nếu nội dung là tích cực, khen ngợi trung tâm hoặc thầy cô, hãy trả về "POSITIVE". Nếu nội dung có ý chê bai, phàn nàn, tiêu cực hoặc không liên quan, hãy trả về "NEGATIVE". Chỉ trả về một từ duy nhất.`;
 
-          const response = await ai.models.generateContent({
+          const response = await getAI().models.generateContent({
             model: GEN_MODEL,
             contents: analysisPrompt
           });
@@ -1633,7 +1633,7 @@ const Pricing = ({ onSelectPackage }: { onSelectPackage: (pkg: any) => void }) =
                   {p.support}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -3293,7 +3293,7 @@ const ChatAssistant = () => {
           
           Địa chỉ trung tâm: 16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội.`;
 
-      const response = await ai.models.generateContent({
+      const response = await getAI().models.generateContent({
         model: GEN_MODEL,
         contents: [...messages, { role: 'user', text: userMsg }].map(m => ({
           role: m.role === 'user' ? 'user' : 'model',
@@ -3595,7 +3595,7 @@ const LivelyBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[0]">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[100]">
       {elements.map((el) => (
         <motion.div
           key={el.id}
