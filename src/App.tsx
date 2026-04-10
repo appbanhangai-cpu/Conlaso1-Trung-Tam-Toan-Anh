@@ -3781,7 +3781,7 @@ export default function App() {
                     <span className="text-2xl font-bold">CONLASO1</span>
                   </div>
                   <p className="text-gray-400 leading-relaxed">
-                    Trung tâm đào tạo Tiếng Anh và Toán chất lượng cao, giúp học sinh phát triển tư duy và kỹ năng toàn diện.
+                    Trung tâm đào tạo Tiếng Anh và Toán chất lượng cao, giúp học sinh phát triển tư duy toàn diện, đồng thời trang bị kỹ năng ứng dụng AI hiệu quả trong học tập và công việc.
                   </p>
                 </div>
                 <div>
