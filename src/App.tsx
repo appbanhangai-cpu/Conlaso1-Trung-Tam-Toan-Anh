@@ -783,6 +783,7 @@ const Teachers = () => (
 const Testimonials = () => {
   const [realReviews, setRealReviews] = useState<Testimonial[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -883,12 +884,26 @@ const Testimonials = () => {
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-brand-dark mb-3">Phản Hồi Từ Phụ Huynh Và Học Sinh</h2>
           <div className="w-16 h-1 bg-brand-accent mx-auto rounded-full mb-6"></div>
-          <div className="flex items-center justify-center gap-4 mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-4 mx-auto">
             <button 
               onClick={() => setShowForm(true)}
               className="bg-brand-cta hover:bg-opacity-90 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-brand-cta/20 transition-all flex items-center gap-2 text-sm"
             >
               <MessageCircle size={18} /> GỬI ĐÁNH GIÁ & BÌNH LUẬN
+            </button>
+
+            <button 
+              onClick={() => setShowAll(!showAll)}
+              className={`
+                relative px-8 py-2.5 rounded-full font-black text-sm transition-all duration-200
+                ${showAll 
+                  ? 'bg-gray-200 text-gray-700 shadow-[0_2px_0_0_#94a3b8] translate-y-[2px]' 
+                  : 'bg-white text-brand-accent shadow-[0_6px_0_0_#e2e8f0] hover:shadow-[0_4px_0_0_#e2e8f0] hover:translate-y-[2px] active:shadow-none active:translate-y-[6px]'
+                }
+                border-2 border-slate-100 uppercase tracking-wider
+              `}
+            >
+              {showAll ? 'Ẩn bớt' : 'Tất cả (All)'}
             </button>
             
             {(staticReviews.length + realReviews.length) >= 9 && (
@@ -914,58 +929,54 @@ const Testimonials = () => {
         <div className="relative">
           <div 
             ref={scrollRef}
-            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ${(staticReviews.length + realReviews.length) >= 9 ? 'max-h-[650px] overflow-y-auto pr-2 custom-scrollbar mask-fade' : ''}`}
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${!showAll && (staticReviews.length + realReviews.length) >= 9 ? 'max-h-[800px] overflow-hidden pr-2' : ''}`}
           >
-            {/* Static Reviews */}
-            {staticReviews.map((r, i) => (
-              <motion.div 
-                key={`static-${i}`}
-                whileHover={{ y: -5 }}
-                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative h-full flex flex-col"
-              >
-                <div className="flex gap-1 text-brand-cta mb-4">
-                  {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                </div>
-                <p className="text-gray-600 italic mb-6 leading-relaxed text-sm flex-grow">"{r.text}"</p>
-                <div className="flex items-center gap-3 mt-auto">
-                  <img 
-                    src={r.avatar} 
-                    alt={r.name} 
-                    className="w-10 h-10 rounded-full" 
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="font-bold text-brand-dark text-xs">{r.name}</div>
-                </div>
-              </motion.div>
-            ))}
-            {/* Real Reviews */}
-            {realReviews.map((r) => (
-              <motion.div 
-                key={r.id}
-                whileHover={{ y: -5 }}
-                className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative h-full flex flex-col"
-              >
-                <div className="flex gap-1 text-brand-cta mb-4">
-                  {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                </div>
-                <p className="text-gray-600 italic mb-6 leading-relaxed text-sm flex-grow">"{r.content}"</p>
-                <div className="flex items-center gap-3 mt-auto">
-                  {r.photoUrl ? (
-                    <img src={r.photoUrl} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-10 h-10 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold text-sm">
-                      {r.name[0]}
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-bold text-brand-dark text-xs">{r.name}</div>
-                    <div className="text-[9px] text-gray-400 uppercase font-bold">{r.role}</div>
+            {/* Combined and Sliced Reviews */}
+            {[...staticReviews.map((r, i) => ({ ...r, id: `static-${i}`, isStatic: true })), ...realReviews]
+              .slice(0, showAll ? undefined : 9)
+              .map((r: any) => (
+                <motion.div 
+                  key={r.id}
+                  whileHover={{ y: -5 }}
+                  className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative h-full flex flex-col"
+                >
+                  <div className="flex gap-1 text-brand-cta mb-4">
+                    {[...Array(r.rating)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                  <p className="text-gray-600 italic mb-6 leading-relaxed text-sm flex-grow">
+                    "{r.isStatic ? r.text : r.content}"
+                  </p>
+                  <div className="flex items-center gap-3 mt-auto">
+                    {r.isStatic ? (
+                      <img 
+                        src={r.avatar} 
+                        alt={r.name} 
+                        className="w-10 h-10 rounded-full" 
+                        loading="lazy"
+                      />
+                    ) : r.photoUrl ? (
+                      <img src={r.photoUrl} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-10 h-10 bg-brand-accent/10 rounded-full flex items-center justify-center text-brand-accent font-bold text-sm">
+                        {r.name[0]}
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-bold text-brand-dark text-xs">{r.name}</div>
+                      {!r.isStatic && <div className="text-[9px] text-gray-400 uppercase font-bold">{r.role}</div>}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
           </div>
+          
+          {!showAll && (staticReviews.length + realReviews.length) > 9 && (
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-brand-bg to-transparent pointer-events-none flex items-end justify-center pb-4">
+              <div className="text-gray-400 text-xs font-medium bg-white/80 backdrop-blur-sm px-4 py-1 rounded-full border border-gray-100">
+                Hiển thị 9 trên {staticReviews.length + realReviews.length} bình luận
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -3555,6 +3566,90 @@ const ChatAssistant = () => {
   );
 };
 
+const LivelyBackground = () => {
+  const [elements, setElements] = useState<{ id: number; x: number; size: number; duration: number; delay: number; type: 'petal' | 'leaf'; rotation: number }[]>([]);
+
+  useEffect(() => {
+    const newElements: any[] = [];
+    // Keep it elegant and sparse - 10 elements is enough for a subtle, realistic effect
+    for (let i = 0; i < 10; i++) {
+      newElements.push({
+        id: i,
+        type: Math.random() > 0.5 ? 'leaf' : 'petal',
+        x: Math.random() * 100,
+        size: Math.random() * 15 + 25, 
+        duration: Math.random() * 25 + 25, // Very slow, majestic drift
+        delay: Math.random() * 20,
+        rotation: Math.random() * 360
+      });
+    }
+    setElements(newElements);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
+      {elements.map((el) => (
+        <motion.div
+          key={el.id}
+          initial={{ y: '-15vh', x: `${el.x}vw`, rotate: el.rotation, opacity: 0 }}
+          animate={{ 
+            y: '115vh',
+            x: [`${el.x}vw`, `${el.x + 10}vw`, `${el.x - 10}vw`, `${el.x}vw`],
+            rotate: [el.rotation, el.rotation + 360, el.rotation + 720],
+            opacity: [0, 0.7, 0.7, 0]
+          }}
+          transition={{ 
+            duration: el.duration, 
+            repeat: Infinity, 
+            delay: el.delay,
+            ease: "easeInOut"
+          }}
+          style={{ width: el.size, height: el.size }}
+          className="absolute"
+        >
+          {el.type === 'leaf' ? (
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+              <defs>
+                <linearGradient id={`leaf-grad-${el.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#4ADE80" />
+                  <stop offset="50%" stopColor="#22C55E" />
+                  <stop offset="100%" stopColor="#166534" />
+                </linearGradient>
+              </defs>
+              <g>
+                <path 
+                  d="M50 5 C65 25 95 45 95 65 C95 85 75 95 50 95 C25 95 5 85 5 65 C5 45 35 25 50 5" 
+                  fill={`url(#leaf-grad-${el.id})`}
+                />
+                <path d="M50 5 Q55 50 50 95" stroke="#064e3b" strokeWidth="1.5" fill="none" opacity="0.4" />
+                <path d="M50 30 L75 45" stroke="#064e3b" strokeWidth="0.8" fill="none" opacity="0.2" />
+                <path d="M50 50 L85 65" stroke="#064e3b" strokeWidth="0.8" fill="none" opacity="0.2" />
+                <path d="M50 30 L25 45" stroke="#064e3b" strokeWidth="0.8" fill="none" opacity="0.2" />
+                <path d="M50 50 L15 65" stroke="#064e3b" strokeWidth="0.8" fill="none" opacity="0.2" />
+              </g>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+              <defs>
+                <radialGradient id={`petal-grad-${el.id}`} cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                  <stop offset="0%" stopColor="#fdf2f8" />
+                  <stop offset="70%" stopColor="#fbcfe8" />
+                  <stop offset="100%" stopColor="#f472b6" />
+                </radialGradient>
+              </defs>
+              <path 
+                d="M50 5 C75 15 95 45 85 75 C75 95 25 95 15 75 C5 45 25 15 50 5" 
+                fill={`url(#petal-grad-${el.id})`}
+              />
+              <path d="M50 5 Q52 50 50 85" stroke="#be185d" strokeWidth="0.5" fill="none" opacity="0.1" />
+            </svg>
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
 export default function App() {
   const [view, setView] = useState<'landing' | 'dashboard'>('landing');
   const [user, setUser] = useState<User | null>(null);
@@ -3636,8 +3731,9 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="font-sans bg-white selection:bg-brand-accent selection:text-white scroll-smooth">
-      {view === 'landing' ? (
+      <div className="font-sans bg-white selection:bg-brand-accent selection:text-white scroll-smooth relative">
+        <LivelyBackground />
+        {view === 'landing' ? (
         <>
           <Navbar />
           <StickyNav />
