@@ -17,63 +17,6 @@ async function startServer() {
 
   app.use(express.json());
 
-  // Lazy AI getter
-  const getAIModel = () => {
-    if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured on the server.");
-    }
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) as any;
-    return ai.getGenerativeModel({ model: "gemini-3-flash-preview" });
-  };
-
-  // API Routes
-  app.post("/api/chat", async (req, res) => {
-    console.log("POST /api/chat");
-    try {
-      const { messages, systemInstruction } = req.body;
-      const model = getAIModel();
-      
-      const result = await model.generateContent({
-        contents: messages.map((m: any) => ({
-          role: m.role === 'user' ? 'user' : 'model',
-          parts: [{ text: m.text }]
-        })),
-        systemInstruction: systemInstruction
-      });
-
-      res.json({ text: result.response.text() });
-    } catch (error: any) {
-      console.error("Chat API Error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  app.post("/api/enhance", async (req, res) => {
-    console.log("POST /api/enhance");
-    try {
-      const { prompt } = req.body;
-      const model = getAIModel();
-      const result = await model.generateContent(prompt);
-      res.json({ text: result.response.text() });
-    } catch (error: any) {
-      console.error("Enhance API Error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  app.post("/api/sentiment", async (req, res) => {
-    console.log("POST /api/sentiment");
-    try {
-      const { prompt } = req.body;
-      const model = getAIModel();
-      const result = await model.generateContent(prompt);
-      res.json({ text: result.response.text() });
-    } catch (error: any) {
-      console.error("Sentiment API Error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     console.log("Initializing Vite in middleware mode...");

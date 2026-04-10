@@ -47,6 +47,7 @@ import {
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import ReactMarkdown from 'react-markdown';
+import { ai, GEN_MODEL } from './lib/gemini';
 import { db, auth, storage } from './firebase';
 import { 
   collection, 
@@ -1177,16 +1178,12 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       
       Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn, giải thích hay ký tự đặc biệt nào khác.`;
 
-      const response = await fetch('/api/enhance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: formData.content, prompt })
+      const response = await ai.models.generateContent({
+        model: GEN_MODEL,
+        contents: prompt
       });
 
-      if (!response.ok) throw new Error('Failed to enhance content');
-      const data = await response.json();
-      
-      const enhanced = data.text?.trim();
+      const enhanced = response.text?.trim();
       console.log("AI Enhanced Content Result:", enhanced);
       if (enhanced) {
         setAiEnhancedContent(enhanced);
@@ -1221,18 +1218,14 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         try {
           const analysisPrompt = `Phân tích nội dung đánh giá sau đây về trung tâm Conlaso1: "${finalContent}". Nếu nội dung là tích cực, khen ngợi trung tâm hoặc thầy cô, hãy trả về "POSITIVE". Nếu nội dung có ý chê bai, phàn nàn, tiêu cực hoặc không liên quan, hãy trả về "NEGATIVE". Chỉ trả về một từ duy nhất.`;
 
-          const response = await fetch('/api/sentiment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: analysisPrompt })
+          const response = await ai.models.generateContent({
+            model: GEN_MODEL,
+            contents: analysisPrompt
           });
 
-          if (response.ok) {
-            const data = await response.json();
-            const sentiment = data.text?.trim().toUpperCase();
-            if (sentiment === "POSITIVE") {
-              isApproved = true;
-            }
+          const sentiment = response.text?.trim().toUpperCase();
+          if (sentiment === "POSITIVE") {
+            isApproved = true;
           }
         } catch (err) {
           console.error("Sentiment Analysis Error:", err);
@@ -3283,21 +3276,18 @@ const ChatAssistant = () => {
           
           Địa chỉ trung tâm: 16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội.`;
 
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: [...messages, { role: 'user', text: userMsg }],
-          systemInstruction 
-        })
+      const response = await ai.models.generateContent({
+        model: GEN_MODEL,
+        contents: [...messages, { role: 'user', text: userMsg }].map(m => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: m.text }]
+        })),
+        config: {
+          systemInstruction
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch AI response');
-      }
-      const data = await response.json();
-      const aiText = data.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
+      const aiText = response.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
       
       setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       if (isVoiceModeRef.current) {
@@ -3305,7 +3295,7 @@ const ChatAssistant = () => {
       }
     } catch (error) {
       console.error('AI Error:', error);
-      const errorMsg = 'Xin lỗi, tôi không thể kết nối ngay lúc này. Bạn vui lòng liên hệ hotline 0961 771 339 (Anh/Toán) hoặc 0988 771 339 (Tin học AI) nhé!';
+      const errorMsg = `Xin lỗi, tôi không thể kết nối ngay lúc này (${error instanceof Error ? error.message : 'Unknown error'}). Bạn vui lòng liên hệ hotline 0961 771 339 (Anh/Toán) hoặc 0988 771 339 (Tin học AI) nhé!`;
       setMessages(prev => [...prev, { role: 'ai', text: errorMsg }]);
       if (isVoiceModeRef.current) {
         speak(errorMsg);
@@ -3570,14 +3560,16 @@ const LivelyBackground = () => {
   const [elements, setElements] = useState<{ id: number; x: number; size: number; duration: number; delay: number; type: 'petal' | 'leaf'; rotation: number }[]>([]);
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    const count = isMobile ? 4 : 10;
     const newElements: any[] = [];
-    // Keep it elegant and sparse - 10 elements is enough for a subtle, realistic effect
-    for (let i = 0; i < 10; i++) {
+    // Keep it elegant and sparse - 10 elements for desktop, 4 for mobile
+    for (let i = 0; i < count; i++) {
       newElements.push({
         id: i,
         type: Math.random() > 0.5 ? 'leaf' : 'petal',
         x: Math.random() * 100,
-        size: Math.random() * 15 + 25, 
+        size: isMobile ? (Math.random() * 10 + 15) : (Math.random() * 15 + 25), 
         duration: Math.random() * 25 + 25, // Very slow, majestic drift
         delay: Math.random() * 20,
         rotation: Math.random() * 360
