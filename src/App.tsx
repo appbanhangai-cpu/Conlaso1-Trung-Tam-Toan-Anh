@@ -322,9 +322,11 @@ const Hero = () => (
         >
           <div className="relative z-10 rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
             <img 
-              src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=80&w=1000" 
+              src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&q=60&w=800" 
               alt="Học sinh Conlaso1" 
               className="w-full h-auto"
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -527,6 +529,10 @@ const Programs = () => {
           {programs.map((p, i) => (
             <motion.div 
               key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
               whileHover={{ y: -10, scale: 1.02 }}
               className={`${p.color} ${p.borderColor} p-8 rounded-3xl transition-all border-2 hover:shadow-xl flex flex-col h-full`}
             >
@@ -723,7 +729,14 @@ const Benefits = () => {
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((b, i) => (
-            <div key={i} className="flex items-center gap-4 mb-6 md:block md:text-center group">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="flex items-center gap-4 mb-6 md:block md:text-center group"
+            >
               <div className="w-14 h-14 md:w-16 md:h-16 bg-brand-accent rounded-2xl flex items-center justify-center flex-shrink-0 md:mx-auto mb-0 md:mb-4 group-hover:rotate-6 transition-transform shadow-lg shadow-brand-accent/20">
                 {b.icon}
               </div>
@@ -731,7 +744,7 @@ const Benefits = () => {
                 <h3 className="text-lg font-bold text-brand-dark mb-1 md:mb-2">{b.title}</h3>
                 <p className="text-gray-600 text-xs">{b.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -745,7 +758,7 @@ const Teachers = () => (
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="order-2 md:order-1">
           <img 
-            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=1000" 
+            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=60&w=800" 
             alt="Giáo viên Conlaso1" 
             className="rounded-3xl shadow-xl border-4 border-white/10"
             loading="lazy"
@@ -1551,8 +1564,12 @@ const Pricing = ({ onSelectPackage }: { onSelectPackage: (pkg: any) => void }) =
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {sortedPackages.map((p, i) => (
-            <div 
+            <motion.div 
               key={i} 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
               className={`relative p-6 rounded-[2.5rem] border-2 transition-all duration-500 flex flex-col ${
                 p.featured 
                   ? 'bg-brand-dark text-white border-brand-accent shadow-2xl md:scale-105 z-10' 
@@ -3561,17 +3578,16 @@ const LivelyBackground = () => {
 
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
-    const count = isMobile ? 4 : 10;
+    const count = isMobile ? 3 : 6;
     const newElements: any[] = [];
-    // Keep it elegant and sparse - 10 elements for desktop, 4 for mobile
     for (let i = 0; i < count; i++) {
       newElements.push({
         id: i,
         type: Math.random() > 0.5 ? 'leaf' : 'petal',
         x: Math.random() * 100,
-        size: isMobile ? (Math.random() * 10 + 15) : (Math.random() * 15 + 25), 
-        duration: Math.random() * 25 + 25, // Very slow, majestic drift
-        delay: Math.random() * 20,
+        size: isMobile ? (Math.random() * 8 + 12) : (Math.random() * 12 + 20), 
+        duration: Math.random() * 20 + 30, 
+        delay: Math.random() * 15,
         rotation: Math.random() * 360
       });
     }
@@ -3579,22 +3595,22 @@ const LivelyBackground = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[9999]">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[0]">
       {elements.map((el) => (
         <motion.div
           key={el.id}
-          initial={{ y: '-15vh', x: `${el.x}vw`, rotate: el.rotation, opacity: 0 }}
+          initial={{ y: '-10vh', x: `${el.x}vw`, rotate: el.rotation, opacity: 0 }}
           animate={{ 
-            y: '115vh',
-            x: [`${el.x}vw`, `${el.x + 10}vw`, `${el.x - 10}vw`, `${el.x}vw`],
-            rotate: [el.rotation, el.rotation + 360, el.rotation + 720],
-            opacity: [0, 0.7, 0.7, 0]
+            y: '110vh',
+            x: [`${el.x}vw`, `${el.x + 5}vw`, `${el.x - 5}vw`, `${el.x}vw`],
+            rotate: el.rotation + 360,
+            opacity: [0, 0.5, 0.5, 0]
           }}
           transition={{ 
             duration: el.duration, 
             repeat: Infinity, 
             delay: el.delay,
-            ease: "easeInOut"
+            ease: "linear"
           }}
           style={{ width: el.size, height: el.size }}
           className="absolute"
