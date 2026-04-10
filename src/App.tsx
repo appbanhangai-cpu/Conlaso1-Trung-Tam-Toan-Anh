@@ -976,16 +976,16 @@ const Testimonials = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-[1rem] p-3 w-full max-w-[300px] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="bg-white rounded-[1.5rem] p-6 w-full max-w-[420px] shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <button 
                 onClick={() => setShowForm(false)}
-                className="absolute top-2 right-2 text-gray-400 hover:text-brand-dark transition-colors z-10"
+                className="absolute top-4 right-4 text-gray-400 hover:text-brand-dark transition-colors z-10"
               >
-                <X size={14} />
+                <X size={20} />
               </button>
-              <h3 className="text-sm font-bold text-brand-dark mb-0.5">Gửi đánh giá của bạn</h3>
-              <p className="text-gray-500 text-[8px] mb-2">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
+              <h3 className="text-lg font-bold text-brand-dark mb-1">Gửi đánh giá của bạn</h3>
+              <p className="text-gray-500 text-xs mb-4">Cảm ơn bạn đã chia sẻ trải nghiệm cùng Conlaso1.</p>
               
               <TestimonialForm onSuccess={() => setShowForm(false)} />
             </motion.div>
@@ -1042,12 +1042,40 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
+      
+      // Ensure video is ready and has dimensions
+      if (video.readyState < 2 || video.videoWidth === 0) return;
+
+      // Resize to max 400px to keep Firestore document size small
+      const maxSize = 400;
+      let width = video.videoWidth;
+      let height = video.videoHeight;
+      
+      if (width > height) {
+        if (width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        }
+      } else {
+        if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for better compatibility
       if (ctx) {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/jpeg');
+        // Fill with white first to avoid transparency issues
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw the video frame
+        ctx.drawImage(video, 0, 0, width, height);
+        
+        // Use higher quality initially to avoid compression artifacts that might look like tinting
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         setPhoto(dataUrl);
         setFormError(null);
         stopCamera();
@@ -1060,8 +1088,34 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhoto(reader.result as string);
-        setFormError(null);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxSize = 400;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width *= maxSize / height;
+              height = maxSize;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          setPhoto(dataUrl);
+          setFormError(null);
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -1086,7 +1140,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
       const result = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
-        contents: [{ role: "user", parts: [{ text: prompt }] }]
+        contents: prompt
       });
       
       const enhanced = result.text?.trim();
@@ -1129,7 +1183,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
           const result = await ai.models.generateContent({
             model: "gemini-3-flash-preview",
-            contents: [{ role: "user", parts: [{ text: analysisPrompt }] }]
+            contents: analysisPrompt
           });
           
           const sentiment = result.text?.trim().toUpperCase();
@@ -1157,6 +1211,8 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       }
       onSuccess();
     } catch (error) {
+      console.error("Submission Error:", error);
+      alert("Đã có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại sau.");
       handleFirestoreError(error, 'create', 'testimonials');
     } finally {
       setLoading(false);
@@ -1254,24 +1310,24 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         </motion.div>
       )}
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="space-y-0.5">
-          <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Họ tên</label>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Họ tên</label>
           <input 
             required 
             type="text" 
             value={formData.name}
             onChange={e => setFormData({...formData, name: e.target.value})}
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-xs"
+            className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-300 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10 outline-none transition-all text-sm font-medium bg-white shadow-sm"
             placeholder="Nguyễn Văn A"
           />
         </div>
-        <div className="space-y-0.5">
-          <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Vai trò</label>
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Vai trò</label>
           <select 
             value={formData.role}
             onChange={e => setFormData({...formData, role: e.target.value})}
-            className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all text-xs appearance-none"
+            className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-300 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10 outline-none transition-all text-sm font-medium bg-white shadow-sm appearance-none cursor-pointer"
           >
             <option value="Phụ huynh">Phụ huynh</option>
             <option value="Học sinh">Học sinh</option>
@@ -1279,13 +1335,13 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
         </div>
       </div>
 
-      <div className="space-y-0.5">
-        <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Nội dung đánh giá & Bình luận</label>
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Nội dung đánh giá & Bình luận</label>
         <textarea 
           required
           value={formData.content}
           onChange={e => setFormData({...formData, content: e.target.value})}
-          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/20 outline-none transition-all h-20 resize-none text-xs"
+          className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10 outline-none transition-all h-24 resize-none text-sm font-medium bg-white shadow-sm"
           placeholder="Chia sẻ cảm nhận hoặc bình luận của bạn về trung tâm..."
         ></textarea>
         
@@ -3347,7 +3403,9 @@ const ChatAssistant = () => {
                       ? 'bg-brand-accent text-white rounded-tr-none' 
                       : 'bg-white text-gray-700 shadow-sm border border-gray-100 rounded-tl-none'
                   }`}>
-                    <div className="prose prose-sm max-w-none prose-headings:font-bold prose-headings:text-brand-dark prose-p:leading-relaxed prose-li:my-1">
+                    <div className={`prose prose-sm max-w-none prose-p:leading-relaxed prose-li:my-1 ${
+                      msg.role === 'user' ? 'prose-invert !text-white' : 'prose-headings:font-bold prose-headings:text-brand-dark'
+                    }`}>
                       <ReactMarkdown>{msg.text}</ReactMarkdown>
                     </div>
                     {msg.role === 'ai' && (
