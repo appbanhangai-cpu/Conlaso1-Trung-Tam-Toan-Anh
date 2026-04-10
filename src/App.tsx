@@ -1013,20 +1013,39 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  useEffect(() => {
-    if (isCameraOpen && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
+  // Use a callback ref to ensure srcObject is set as soon as the video element is mounted
+  const setVideoRef = (node: HTMLVideoElement | null) => {
+    if (node && streamRef.current) {
+      node.srcObject = streamRef.current;
+      node.play().catch(err => console.error("Video play error:", err));
     }
-  }, [isCameraOpen]);
+    (videoRef as any).current = node;
+  };
 
   const startCamera = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Trình duyệt của bạn không hỗ trợ truy cập camera.");
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 640 },
+          height: { ideal: 480 }
+        } 
+      });
       streamRef.current = stream;
       setIsCameraOpen(true);
-    } catch (err) {
+      setFormError(null);
+    } catch (err: any) {
       console.error("Error accessing camera:", err);
-      alert("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        alert("Bạn đã từ chối quyền truy cập camera. Vui lòng cho phép trong cài đặt trình duyệt.");
+      } else {
+        alert("Không thể truy cập camera. Vui lòng đảm bảo không có ứng dụng nào khác đang dùng camera.");
+      }
     }
   };
 
@@ -1038,7 +1057,7 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     setIsCameraOpen(false);
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
@@ -1046,39 +1065,51 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       // Ensure video is ready and has dimensions
       if (video.readyState < 2 || video.videoWidth === 0) return;
 
-      // Resize to max 400px to keep Firestore document size small
-      const maxSize = 400;
-      let width = video.videoWidth;
-      let height = video.videoHeight;
-      
-      if (width > height) {
-        if (width > maxSize) {
-          height *= maxSize / width;
-          width = maxSize;
-        }
-      } else {
-        if (height > maxSize) {
-          width *= maxSize / height;
-          height = maxSize;
-        }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for better compatibility
-      if (ctx) {
-        // Fill with white first to avoid transparency issues
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
+      try {
+        // Using createImageBitmap often bypasses color space bugs in some browsers/GPUs
+        const bitmap = await createImageBitmap(video);
         
-        // Draw the video frame
-        ctx.drawImage(video, 0, 0, width, height);
+        // Resize to max 400px to keep Firestore document size small
+        const maxSize = 400;
+        let width = bitmap.width;
+        let height = bitmap.height;
+        const scale = Math.min(1, maxSize / Math.max(width, height));
+        width *= scale;
+        height *= scale;
         
-        // Use higher quality initially to avoid compression artifacts that might look like tinting
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        setPhoto(dataUrl);
-        setFormError(null);
-        stopCamera();
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          // Draw the bitmap to the canvas with scaling
+          ctx.drawImage(bitmap, 0, 0, width, height);
+          
+          // Use standard JPEG format
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setPhoto(dataUrl);
+          setFormError(null);
+          stopCamera();
+        }
+        bitmap.close();
+      } catch (err) {
+        console.error("createImageBitmap error, falling back to drawImage:", err);
+        // Fallback to standard drawImage if bitmap capture fails
+        const maxSize = 400;
+        let width = video.videoWidth;
+        let height = video.videoHeight;
+        const scale = Math.min(1, maxSize / Math.max(width, height));
+        width *= scale;
+        height *= scale;
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, width, height);
+          setPhoto(canvas.toDataURL('image/jpeg', 0.8));
+          setFormError(null);
+          stopCamera();
+        }
       }
     }
   };
@@ -1125,9 +1156,6 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
     if (!formData.content.trim()) return;
     setIsAiProcessing(true);
     try {
-      const { GoogleGenAI, ThinkingLevel } = await import("@google/genai") as any;
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-
       const prompt = `Bạn là một chuyên gia viết nội dung marketing và biên tập viên cao cấp. 
       Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (chuyên dạy Toán, Tiếng Anh và AI) để nó trở nên:
       1. Chuyên nghiệp và lịch sự hơn.
@@ -1138,12 +1166,16 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       
       Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn, giải thích hay ký tự đặc biệt nào khác.`;
 
-      const result = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt
+      const response = await fetch('/api/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: formData.content, prompt })
       });
+
+      if (!response.ok) throw new Error('Failed to enhance content');
+      const data = await response.json();
       
-      const enhanced = result.text?.trim();
+      const enhanced = data.text?.trim();
       console.log("AI Enhanced Content Result:", enhanced);
       if (enhanced) {
         setAiEnhancedContent(enhanced);
@@ -1176,19 +1208,20 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
       let isApproved = false;
       if (rating >= 4) {
         try {
-          const { GoogleGenAI, ThinkingLevel } = await import("@google/genai") as any;
-          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-
           const analysisPrompt = `Phân tích nội dung đánh giá sau đây về trung tâm Conlaso1: "${finalContent}". Nếu nội dung là tích cực, khen ngợi trung tâm hoặc thầy cô, hãy trả về "POSITIVE". Nếu nội dung có ý chê bai, phàn nàn, tiêu cực hoặc không liên quan, hãy trả về "NEGATIVE". Chỉ trả về một từ duy nhất.`;
 
-          const result = await ai.models.generateContent({
-            model: "gemini-3-flash-preview",
-            contents: analysisPrompt
+          const response = await fetch('/api/sentiment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: analysisPrompt })
           });
-          
-          const sentiment = result.text?.trim().toUpperCase();
-          if (sentiment === "POSITIVE") {
-            isApproved = true;
+
+          if (response.ok) {
+            const data = await response.json();
+            const sentiment = data.text?.trim().toUpperCase();
+            if (sentiment === "POSITIVE") {
+              isApproved = true;
+            }
           }
         } catch (err) {
           console.error("Sentiment Analysis Error:", err);
@@ -1227,7 +1260,13 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
           {photo ? (
             <img src={photo} alt="Preview" className="w-full h-full object-cover" />
           ) : isCameraOpen ? (
-            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+            <video 
+              ref={setVideoRef} 
+              autoPlay 
+              playsInline 
+              muted 
+              className="w-full h-full object-cover bg-black" 
+            />
           ) : (
             <div className="text-center p-4">
               <Camera className="mx-auto text-gray-400 mb-2" size={24} />
@@ -3208,20 +3247,7 @@ const ChatAssistant = () => {
     setLoading(true);
 
     try {
-      const { GoogleGenAI } = await import("@google/genai");
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      
-      // Build history for context
-      const history = messages.slice(-10).map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      }));
-
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: [...history, { role: 'user', parts: [{ text: userMsg }] }],
-        config: {
-          systemInstruction: `Bạn là trợ lý ảo thông minh của Trung tâm Conlaso1 - Trung tâm đào tạo Tiếng Anh, Toán và Tin học ứng dụng AI.
+      const systemInstruction = `Bạn là trợ lý ảo thông minh của Trung tâm Conlaso1 - Trung tâm đào tạo Tiếng Anh, Toán và Tin học ứng dụng AI.
           Nhiệm vụ của bạn là giải đáp các thắc mắc của phụ huynh và học sinh về:
           1. Khóa học Tiếng Anh: Nền tảng, giao tiếp, luyện thi.
           2. Khóa học Toán: Toán tư duy, Toán nâng cao cho các cấp.
@@ -3244,11 +3270,24 @@ const ChatAssistant = () => {
           
           LƯU Ý QUAN TRỌNG: Khi đọc số điện thoại, bạn PHẢI viết tách rời từng chữ số (ví dụ: 0 9 8 8 . 7 7 1 . 3 3 9) để hệ thống đọc chậm và rõ ràng từng số một cho phụ huynh dễ nghe.
           
-          Địa chỉ trung tâm: 16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội.`
-        }
+          Địa chỉ trung tâm: 16A Lý Thái Tổ - Hoàn Kiếm - Hà Nội.`;
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          messages: [...messages, { role: 'user', text: userMsg }],
+          systemInstruction 
+        })
       });
 
-      const aiText = response.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch AI response');
+      }
+      const data = await response.json();
+      const aiText = data.text || 'Xin lỗi, tôi gặp chút trục trặc. Bạn vui lòng thử lại nhé!';
+      
       setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       if (isVoiceModeRef.current) {
         speak(aiText);
