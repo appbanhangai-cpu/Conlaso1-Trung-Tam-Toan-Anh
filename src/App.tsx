@@ -1224,7 +1224,30 @@ const TestimonialForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
     setLoading(true);
     try {
-      const finalContent = aiEnhancedContent || formData.content;
+      let finalContent = aiEnhancedContent || formData.content;
+
+      // Automatically rewrite to fix spelling and polish if not already done
+      if (!aiEnhancedContent) {
+        try {
+          const prompt = `Bạn là một chuyên gia biên tập nội dung. 
+          Hãy sửa lỗi chính tả và viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 sao cho hay hơn, chuyên nghiệp hơn nhưng vẫn giữ đúng ý nghĩa gốc (sát ý của khách).
+          Đánh giá gốc: "${formData.content}"
+          Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn hay giải thích nào.`;
+
+          const response = await getAI().models.generateContent({
+            model: GEN_MODEL,
+            contents: prompt
+          });
+
+          const enhanced = response.text?.trim();
+          if (enhanced) {
+            finalContent = enhanced;
+          }
+        } catch (err) {
+          console.error("Auto Rewrite Error:", err);
+          // Continue with original content if AI fails
+        }
+      }
       
       // AI Sentiment Analysis for Auto-Approval
       let isApproved = false;
@@ -2021,6 +2044,7 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   const [selectedStudentToEdit, setSelectedStudentToEdit] = useState<Student | null>(null);
   const [isEditStudentModalOpen, setIsEditStudentModalOpen] = useState(false);
   const [showAllColumns, setShowAllColumns] = useState(false);
+  const [isRewritingId, setIsRewritingId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -2092,6 +2116,7 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
   };
 
   const rewriteTestimonial = async (testimonial: Testimonial) => {
+    setIsRewritingId(testimonial.id);
     try {
       const prompt = `Bạn là một chuyên gia viết nội dung marketing và biên tập viên cao cấp. 
       Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (chuyên dạy Toán, Tiếng Anh và AI) để nó trở nên:
@@ -2115,6 +2140,8 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
     } catch (error) {
       console.error("AI Rewrite Error:", error);
       alert("Đã có lỗi xảy ra khi viết lại nội dung.");
+    } finally {
+      setIsRewritingId(null);
     }
   };
 
@@ -2530,10 +2557,11 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                   <div className="flex gap-2">
                     <button 
                       onClick={() => rewriteTestimonial(t)}
-                      className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all"
+                      disabled={isRewritingId === t.id}
+                      className={`p-2 rounded-lg transition-all ${isRewritingId === t.id ? 'bg-blue-100 text-blue-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}
                       title="AI Viết lại hay hơn"
                     >
-                      <Sparkles size={18} />
+                      <Sparkles size={18} className={isRewritingId === t.id ? 'animate-spin' : ''} />
                     </button>
                     <button 
                       onClick={() => updateTestimonialStatus(t.id, !t.approved)}
