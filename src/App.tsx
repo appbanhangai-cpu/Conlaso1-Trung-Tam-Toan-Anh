@@ -42,7 +42,8 @@ import {
   Check,
   Camera,
   Upload,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
@@ -351,7 +352,7 @@ const Hero = () => (
               </motion.span>
             </motion.a>
             <motion.a 
-              href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619" 
+              href="https://www.google.com/maps/dir/?api=1&destination=16A%20P.%20Lý%20Thái%20Tổ,%20Hoàn%20Kiếm,%20Hà%20Nội" 
               target="_blank" 
               rel="noopener noreferrer"
               animate={{ scale: [1, 1.05, 1] }}
@@ -366,7 +367,7 @@ const Hero = () => (
                 animate={{ color: ["#ffffff", "#ffcc00", "#ffffff"] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
               >
-                16A Lý Thái Tổ
+                16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội
               </motion.span>
             </motion.a>
           </div>
@@ -1760,7 +1761,7 @@ const RegistrationForm = () => {
                 </div>
               </motion.a>
               <motion.a 
-                href="https://www.google.com/maps/dir/?api=1&destination=21.03098388770399,105.85203917430619"
+                href="https://www.google.com/maps/dir/?api=1&destination=16A%20P.%20Lý%20Thái%20Tổ,%20Hoàn%20Kiếm,%20Hà%20Nội"
                 target="_blank"
                 rel="noopener noreferrer"
                 animate={{ scale: [1, 1.02, 1] }}
@@ -1986,7 +1987,7 @@ const Location = () => (
             <h4 className="font-bold text-sm">Cơ sở Hoàn Kiếm</h4>
           </div>
           <p className="text-xs text-gray-300 mb-3 leading-relaxed">
-            16A P. Lý Thái Tổ, Lý Thái Tổ, Hoàn Kiếm, Hà Nội 100000, Vietnam
+            16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội
           </p>
           <a 
             href="https://www.google.com/maps/dir/?api=1&destination=16A%20P.%20Lý%20Thái%20Tổ,%20Hoàn%20Kiếm,%20Hà%20Nội" 
@@ -2087,6 +2088,33 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
       await updateDoc(doc(db, 'testimonials', id), { approved });
     } catch (error) {
       handleFirestoreError(error, 'update', `testimonials/${id}`);
+    }
+  };
+
+  const rewriteTestimonial = async (testimonial: Testimonial) => {
+    try {
+      const prompt = `Bạn là một chuyên gia viết nội dung marketing và biên tập viên cao cấp. 
+      Hãy viết lại đánh giá sau đây của khách hàng về trung tâm giáo dục Conlaso1 (chuyên dạy Toán, Tiếng Anh và AI) để nó trở nên:
+      1. Chuyên nghiệp và lịch sự hơn.
+      2. Truyền cảm hứng và giàu cảm xúc tích cực.
+      3. Sử dụng từ ngữ phong phú, gãy gọn nhưng vẫn giữ đúng ý nghĩa gốc và sự chân thật của người viết.
+      
+      Đánh giá gốc: "${testimonial.content}"
+      
+      Yêu cầu: Chỉ trả về duy nhất nội dung đánh giá đã được tối ưu, không thêm bất kỳ lời dẫn, giải thích hay ký tự đặc biệt nào khác.`;
+
+      const response = await getAI().models.generateContent({
+        model: GEN_MODEL,
+        contents: prompt
+      });
+
+      const enhanced = response.text?.trim();
+      if (enhanced) {
+        await updateDoc(doc(db, 'testimonials', testimonial.id), { content: enhanced });
+      }
+    } catch (error) {
+      console.error("AI Rewrite Error:", error);
+      alert("Đã có lỗi xảy ra khi viết lại nội dung.");
     }
   };
 
@@ -2500,6 +2528,13 @@ const Dashboard = ({ user, onLogout }: { user: User, onLogout: () => void }) => 
                     <div className="text-[10px] text-gray-400 uppercase font-bold">{t.role}</div>
                   </div>
                   <div className="flex gap-2">
+                    <button 
+                      onClick={() => rewriteTestimonial(t)}
+                      className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all"
+                      title="AI Viết lại hay hơn"
+                    >
+                      <Sparkles size={18} />
+                    </button>
                     <button 
                       onClick={() => updateTestimonialStatus(t.id, !t.approved)}
                       className={`p-2 rounded-lg transition-all ${t.approved ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}
@@ -3789,7 +3824,7 @@ export default function App() {
                   <ul className="space-y-4 text-gray-400">
                     <li className="flex items-start gap-3">
                       <MapPin size={20} className="text-brand-accent flex-shrink-0" />
-                      <span>16A P. Lý Thái Tổ - Hoàn Kiếm - Hà Nội</span>
+                      <span>16A Lý Thái Tổ, Hoàn Kiếm, Hà Nội</span>
                     </li>
                     <li className="flex items-center gap-3">
                       <Phone size={20} className="text-brand-accent flex-shrink-0" />
